@@ -5,9 +5,21 @@ import { motion } from 'framer-motion';
 
 const ProductCard = ({ product }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const getMinPrice = () => {
     return Math.min(...product.sizes.map(size => size.price));
+  };
+
+  // Resolve image path: use PUBLIC_URL for local paths, keep full URLs as-is
+  const getImageSrc = () => {
+    if (!product.image) return '';
+    // If it's already a full URL or data URI, use as-is
+    if (product.image.startsWith('http') || product.image.startsWith('data:')) {
+      return product.image;
+    }
+    // For local paths, prepend PUBLIC_URL for deployment compatibility
+    return `${process.env.PUBLIC_URL}${product.image}`;
   };
 
   return (
@@ -27,13 +39,20 @@ const ProductCard = ({ product }) => {
     >
       {/* Image Container - Uniform Square Size */}
       <div className="relative w-full aspect-square bg-gray-100 border-b-2 md:border-b-4 transition-colors duration-300 group-hover:border-primary overflow-hidden">
-        <motion.img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-full object-cover"
-          whileHover={{ scale: 1.08 }}
-          transition={{ duration: 0.5 }}
-        />
+        {!imgError ? (
+          <motion.img
+            src={getImageSrc()}
+            alt={product.name}
+            className="w-full h-full object-cover"
+            whileHover={{ scale: 1.08 }}
+            transition={{ duration: 0.5 }}
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
+            <span className="text-4xl font-bold text-primary/40">{product.name?.charAt(0) || '?'}</span>
+          </div>
+        )}
         
         {/* Image Overlay on Hover */}
         <motion.div

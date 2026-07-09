@@ -445,7 +445,7 @@ const AdminPanel = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <img
-                        src={product.image}
+                        src={product.image.startsWith('http') || product.image.startsWith('data:') ? product.image : `${process.env.PUBLIC_URL}${product.image}`}
                         alt={product.name}
                         className="h-12 w-12 rounded-md object-cover mr-4"
                       />

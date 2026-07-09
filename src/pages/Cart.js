@@ -87,7 +87,7 @@ const Cart = () => {
                       />
                     ) : (
                       <img
-                        src={item.image}
+                        src={item.image.startsWith('http') || item.image.startsWith('data:') ? item.image : `${process.env.PUBLIC_URL}${item.image}`}
                         alt={item.name}
                         className="w-full h-full object-cover"
                       />

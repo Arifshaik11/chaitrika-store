@@ -121,7 +121,7 @@ const ProductDetail = () => {
               </div>
             ) : (
               <img
-                src={product.image}
+                src={product.image.startsWith('http') || product.image.startsWith('data:') ? product.image : `${process.env.PUBLIC_URL}${product.image}`}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />

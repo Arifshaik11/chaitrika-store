@@ -28,11 +28,9 @@ const defaultProducts = [
       { shape: 'Round', price: 75 },
       { shape: 'Heart', price: 100 }
     ],
-    image: 'https://images.unsplash.com/photo-1606986628024-c8f1a3f7b7e0?w=500&h=500&fit=crop',
+    image: '/images/1.jpg',
     images: [
-      'https://images.unsplash.com/photo-1606986628024-c8f1a3f7b7e0?w=500&h=500&fit=crop',
-      'https://images.unsplash.com/photo-16115327366547-bde2e1a69c21?w=500&h=500&fit=crop',
-      'https://images.unsplash.com/photo-1514306688941-586cb221d7d7?w=500&h=500&fit=crop'
+      '/images/1.jpg'
     ],
     description: 'Premium magnetic frames with clear acrylic - perfect for displaying your favorite moments on any metal surface',
     customizable: true
@@ -52,8 +50,8 @@ const defaultProducts = [
       { shape: 'Square', price: 30 },
       { shape: 'Star', price: 50 }
     ],
-    image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400',
-    description: 'Personalized keychains with your favorite photos',
+    image: '/images/keychain.jpeg',
+    description: 'Personalized keychains with your favorite photos - durable and stylish accessories for your keys',
     customizable: true
   },
   {
@@ -73,8 +71,8 @@ const defaultProducts = [
       { shape: 'Oval', price: 150 },
       { shape: 'Hexagon', price: 200 }
     ],
-    image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400',
-    description: 'Premium acrylic frames with crystal clear transparency',
+    image: '/images/2.jpg',
+    description: 'Premium acrylic frames with crystal clear transparency - modern display solution for your treasured photos',
     customizable: true
   },
   {
@@ -94,11 +92,15 @@ const defaultProducts = [
       { shape: 'Rounded', price: 100 },
       { shape: 'Wave', price: 150 }
     ],
-    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
-    description: 'Elegant MDF frames available in multiple finishes',
+    image: '/images/mdf.jpeg',
+    description: 'Elegant MDF frames available in multiple finishes - lightweight yet durable wooden photo frames',
     customizable: true
   }
 ];
+
+// Map of default product IDs to their correct image paths
+const defaultImageMap = {};
+defaultProducts.forEach(p => { defaultImageMap[p.id] = p.image; });
 
 export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
@@ -110,11 +112,19 @@ export const ProductProvider = ({ children }) => {
     if (savedProducts) {
       try {
         const parsed = JSON.parse(savedProducts);
-        // Ensure all products have shapes array
-        productsToUse = parsed.map(product => ({
-          ...product,
-          shapes: product.shapes && product.shapes.length > 0 ? product.shapes : defaultProducts.find(p => p.id === product.id)?.shapes || []
-        }));
+        // Ensure all products have correct shapes and images
+        productsToUse = parsed.map(product => {
+          const defaultProduct = defaultProducts.find(p => p.id === product.id);
+          return {
+            ...product,
+            // For default products, always use the correct image path from code
+            // This prevents stale/corrupted localStorage data from breaking images
+            image: defaultImageMap[product.id] || product.image,
+            shapes: product.shapes && product.shapes.length > 0 
+              ? product.shapes 
+              : defaultProduct?.shapes || []
+          };
+        });
       } catch (error) {
         console.error('Error parsing saved products:', error);
         productsToUse = defaultProducts;
