@@ -8,7 +8,8 @@ import {
   X, 
   Package,
   Minus,
-  Trash2
+  Trash2,
+  Plus
 } from 'lucide-react';
 
 const AdminPanel = () => {
@@ -149,6 +150,7 @@ const AdminPanel = () => {
   };
 
   const handleEdit = (product) => {
+    console.log('Editing product:', product); // Debug log
     setFormData({
       name: product.name,
       category: product.category,
@@ -164,6 +166,7 @@ const AdminPanel = () => {
       })) : [{ shape: '', price: '' }]
     });
     setEditingProduct(product);
+    console.log('Form data set:', formData); // Debug log
   };
 
   const handleDelete = (productId) => {
@@ -187,13 +190,18 @@ const AdminPanel = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Edit Product</h2>
+              <h2 className="text-xl font-semibold">Edit Product: {editingProduct.name}</h2>
               <button
                 onClick={resetForm}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <X className="h-6 w-6" />
               </button>
+            </div>
+
+            {/* Debug info */}
+            <div className="mb-4 p-2 bg-gray-100 rounded text-sm">
+              Editing: {editingProduct.name} | Form loaded: {formData.name ? 'Yes' : 'No'}
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -276,7 +284,7 @@ const AdminPanel = () => {
                 <button
                   type="button"
                   onClick={addSizeField}
-                  className="text-primary hover:text-blue-600 text-sm flex items-center space-x-1"
+                  className="text-primary hover:text-blue-600 text-sm flex items-center space-x-1 bg-blue-50 px-3 py-2 rounded-md hover:bg-blue-100 transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Add Size</span>
@@ -317,7 +325,7 @@ const AdminPanel = () => {
                 <button
                   type="button"
                   onClick={addShapeField}
-                  className="text-primary hover:text-blue-600 text-sm flex items-center space-x-1"
+                  className="text-primary hover:text-blue-600 text-sm flex items-center space-x-1 bg-blue-50 px-3 py-2 rounded-md hover:bg-blue-100 transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Add Shape</span>
