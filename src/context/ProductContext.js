@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { doc, setDoc, collection, onSnapshot, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, onSnapshot, addDoc, updateDoc, deleteDoc, getDocs, query } from 'firebase/firestore';
 import { db } from '../firebase';
 
 const ProductContext = createContext();
@@ -100,10 +100,6 @@ const defaultProducts = [
   }
 ];
 
-// Map of default product IDs to their correct image paths
-const defaultImageMap = {};
-defaultProducts.forEach(p => { defaultImageMap[p.id] = p.image; });
-
 export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState(() => {
     // Load from localStorage on initial load
@@ -115,6 +111,53 @@ export const ProductProvider = ({ children }) => {
       return defaultProducts;
     }
   });
+
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Fetch products from Firestore on component mount
+  useEffect(() => {
+    const fetchProductsFromFirestore = async () => {
+      try {
+        const productsRef = collection(db, 'products');
+        const unsubscribe = onSnapshot(productsRef, async (snapshot) => {
+          if (!snapshot.empty) {
+            const firestoreProducts = snapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            }));
+            setProducts(firestoreProducts);
+            localStorage.setItem('chaitrika_products', JSON.stringify(firestoreProducts));
+            console.log('Products loaded from Firestore:', firestoreProducts);
+            setIsInitialized(true);
+          } else {
+            // If Firestore is empty, initialize with default products
+            console.log('Firestore is empty, initializing with default products...');
+            await initializeDefaultProducts();
+            setIsInitialized(true);
+          }
+        });
+        return unsubscribe;
+      } catch (error) {
+        console.error('Error fetching products from Firestore:', error);
+        setIsInitialized(true);
+      }
+    };
+
+    const initializeDefaultProducts = async () => {
+      try {
+        for (const product of defaultProducts) {
+          await setDoc(doc(db, 'products', product.id), product);
+        }
+        setProducts(defaultProducts);
+        localStorage.setItem('chaitrika_products', JSON.stringify(defaultProducts));
+        console.log('Default products initialized in Firestore');
+      } catch (error) {
+        console.error('Error initializing default products:', error);
+      }
+    };
+
+    fetchProductsFromFirestore();
+  }, []);
 
   // Save to localStorage whenever products change
   useEffect(() => {
@@ -130,8 +173,17 @@ export const ProductProvider = ({ children }) => {
     try {
       const newProduct = {
         ...productData,
-        id: Date.now().toString()
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString()
       };
+      
+      // Add to Firestore
+      setDoc(doc(db, 'products', newProduct.id), newProduct).then(() => {
+        console.log('Product saved to Firestore:', newProduct);
+      }).catch(error => {
+        console.error('Error saving to Firestore:', error);
+      });
+
       setProducts([...products, newProduct]);
       console.log('Product added successfully:', newProduct);
     } catch (error) {
@@ -145,6 +197,14 @@ export const ProductProvider = ({ children }) => {
       const updatedProducts = products.map(p => 
         p.id === id ? { ...p, ...productData } : p
       );
+      
+      // Update in Firestore
+      updateDoc(doc(db, 'products', id), productData).then(() => {
+        console.log('Product updated in Firestore');
+      }).catch(error => {
+        console.error('Error updating in Firestore:', error);
+      });
+
       setProducts(updatedProducts);
       console.log('Product updated successfully');
     } catch (error) {
@@ -156,6 +216,14 @@ export const ProductProvider = ({ children }) => {
   const deleteProduct = (id) => {
     try {
       const filteredProducts = products.filter(p => p.id !== id);
+      
+      // Delete from Firestore
+      deleteDoc(doc(db, 'products', id)).then(() => {
+        console.log('Product deleted from Firestore');
+      }).catch(error => {
+        console.error('Error deleting from Firestore:', error);
+      });
+
       setProducts(filteredProducts);
       console.log('Product deleted successfully');
     } catch (error) {

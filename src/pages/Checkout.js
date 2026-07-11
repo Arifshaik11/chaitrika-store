@@ -54,7 +54,7 @@ const Checkout = () => {
     message += `⏰ *Order Time:* ${new Date().toLocaleString()}\n`;
     message += `🌐 *Ordered via:* Chaitra Wrap@Wear Website`;
     
-    return encodeURIComponent(message);
+    return encodeURI(message);
   };
 
   const handleSubmit = async (e) => {
