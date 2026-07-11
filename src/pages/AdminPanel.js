@@ -21,6 +21,10 @@ const AdminPanel = () => {
   
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categories, setCategories] = useState(['magnetic', 'keychain', 'acrylic', 'mdf']);
+  const [newCategory, setNewCategory] = useState('');
+  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     category: 'magnetic',
@@ -117,7 +121,7 @@ const AdminPanel = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Validate form
@@ -140,28 +144,47 @@ const AdminPanel = () => {
       return;
     }
 
-    const productData = {
-      ...formData,
-      basePrice: parseInt(formData.basePrice) || Math.min(...validSizes.map(s => parseInt(s.price))),
-      sizes: validSizes.map(size => ({
-        size: size.size,
-        price: parseInt(size.price)
-      })),
-      shapes: validShapes.map(shape => ({
-        shape: shape.shape,
-        price: parseInt(shape.price)
-      })),
-      customizable: true
-    };
+    setIsSubmitting(true);
 
-    if (editingProduct) {
-      updateProduct(editingProduct.id, productData);
-    } else {
-      addProduct(productData);
+    try {
+      let imageUrl = formData.image;
+
+      // For local images (data URLs from file input), keep as is
+      // Images are stored as base64 data URLs in the database
+      // This works for small to medium image sizes
+
+      // Exclude raw file object from the database metadata
+      const { imageFile, ...cleanFormData } = formData;
+
+      const productData = {
+        ...cleanFormData,
+        image: imageUrl,
+        basePrice: parseInt(formData.basePrice) || Math.min(...validSizes.map(s => parseInt(s.price))),
+        sizes: validSizes.map(size => ({
+          size: size.size,
+          price: parseInt(size.price)
+        })),
+        shapes: validShapes.map(shape => ({
+          shape: shape.shape,
+          price: parseInt(shape.price)
+        })),
+        customizable: true
+      };
+
+      if (editingProduct) {
+        await updateProduct(editingProduct.id, productData);
+      } else {
+        await addProduct(productData);
+      }
+
+      resetForm();
+      alert(editingProduct ? 'Product updated successfully!' : 'Product added successfully!');
+    } catch (error) {
+      console.error("Error saving product: ", error);
+      alert("Failed to save product: " + error.message);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    resetForm();
-    alert(editingProduct ? 'Product updated successfully!' : 'Product added successfully!');
   };
 
   const handleEdit = (product) => {
@@ -189,6 +212,21 @@ const AdminPanel = () => {
       deleteProduct(productId);
       alert('Product deleted successfully!');
     }
+  };
+
+  const handleAddCategory = () => {
+    if (newCategory.trim() === '') {
+      alert('Please enter a category name');
+      return;
+    }
+    if (categories.includes(newCategory.toLowerCase())) {
+      alert('This category already exists');
+      return;
+    }
+    setCategories([...categories, newCategory.toLowerCase()]);
+    setNewCategory('');
+    setShowNewCategoryInput(false);
+    alert(`Category "${newCategory}" added successfully!`);
   };
 
   return (
@@ -240,17 +278,57 @@ const AdminPanel = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Category *
                 </label>
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="magnetic">Magnetic Frame</option>
-                  <option value="keychain">Keychain</option>
-                  <option value="acrylic">Acrylic Frame</option>
-                  <option value="mdf">MDF Frame</option>
-                </select>
+                <div className="flex space-x-2">
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => setShowNewCategoryInput(!showNewCategoryInput)}
+                    className="px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center space-x-1"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span className="text-sm">Add Category</span>
+                  </button>
+                </div>
+                
+                {showNewCategoryInput && (
+                  <div className="mt-3 flex space-x-2">
+                    <input
+                      type="text"
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value)}
+                      placeholder="Enter new category name"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddCategory}
+                      className="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                    >
+                      Add
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowNewCategoryInput(false);
+                        setNewCategory('');
+                      }}
+                      className="px-3 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div>
@@ -391,15 +469,25 @@ const AdminPanel = () => {
               <div className="flex space-x-4 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-primary text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
+                  disabled={isSubmitting}
+                  className={`flex-1 text-white py-2 px-4 rounded-md transition-colors flex items-center justify-center space-x-2 ${
+                    isSubmitting 
+                      ? 'bg-gray-400 cursor-not-allowed' 
+                      : 'bg-primary hover:bg-blue-600'
+                  }`}
                 >
                   <Save className="h-4 w-4" />
-                  <span>{editingProduct ? 'Update Product' : 'Add Product'}</span>
+                  <span>
+                    {isSubmitting 
+                      ? 'Saving Product...' 
+                      : (editingProduct ? 'Update Product' : 'Add Product')}
+                  </span>
                 </button>
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 transition-colors"
+                  disabled={isSubmitting}
+                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>

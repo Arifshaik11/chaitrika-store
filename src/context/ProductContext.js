@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { doc, setDoc, collection, onSnapshot, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const ProductContext = createContext();
 
@@ -103,60 +105,63 @@ const defaultImageMap = {};
 defaultProducts.forEach(p => { defaultImageMap[p.id] = p.image; });
 
 export const ProductProvider = ({ children }) => {
-  const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    const savedProducts = localStorage.getItem('products');
-    let productsToUse = defaultProducts;
-    
-    if (savedProducts) {
-      try {
-        const parsed = JSON.parse(savedProducts);
-        // Ensure all products have correct shapes and images
-        productsToUse = parsed.map(product => {
-          const defaultProduct = defaultProducts.find(p => p.id === product.id);
-          return {
-            ...product,
-            // For default products, always use the correct image path from code
-            // This prevents stale/corrupted localStorage data from breaking images
-            image: defaultImageMap[product.id] || product.image,
-            shapes: product.shapes && product.shapes.length > 0 
-              ? product.shapes 
-              : defaultProduct?.shapes || []
-          };
-        });
-      } catch (error) {
-        console.error('Error parsing saved products:', error);
-        productsToUse = defaultProducts;
-      }
+  const [products, setProducts] = useState(() => {
+    // Load from localStorage on initial load
+    try {
+      const saved = localStorage.getItem('chaitrika_products');
+      return saved ? JSON.parse(saved) : defaultProducts;
+    } catch (error) {
+      console.error('Error loading products from localStorage:', error);
+      return defaultProducts;
     }
-    
-    setProducts(productsToUse);
-    localStorage.setItem('products', JSON.stringify(productsToUse));
-  }, []);
+  });
+
+  // Save to localStorage whenever products change
+  useEffect(() => {
+    try {
+      localStorage.setItem('chaitrika_products', JSON.stringify(products));
+      console.log('Products saved to localStorage');
+    } catch (error) {
+      console.error('Error saving products to localStorage:', error);
+    }
+  }, [products]);
 
   const addProduct = (productData) => {
-    const newProduct = {
-      ...productData,
-      id: uuidv4()
-    };
-    const updatedProducts = [...products, newProduct];
-    setProducts(updatedProducts);
-    localStorage.setItem('products', JSON.stringify(updatedProducts));
+    try {
+      const newProduct = {
+        ...productData,
+        id: Date.now().toString()
+      };
+      setProducts([...products, newProduct]);
+      console.log('Product added successfully:', newProduct);
+    } catch (error) {
+      console.error("Error adding product: ", error);
+      throw error;
+    }
   };
 
   const updateProduct = (id, productData) => {
-    const updatedProducts = products.map(product =>
-      product.id === id ? { ...product, ...productData } : product
-    );
-    setProducts(updatedProducts);
-    localStorage.setItem('products', JSON.stringify(updatedProducts));
+    try {
+      const updatedProducts = products.map(p => 
+        p.id === id ? { ...p, ...productData } : p
+      );
+      setProducts(updatedProducts);
+      console.log('Product updated successfully');
+    } catch (error) {
+      console.error("Error updating product: ", error);
+      throw error;
+    }
   };
 
   const deleteProduct = (id) => {
-    const updatedProducts = products.filter(product => product.id !== id);
-    setProducts(updatedProducts);
-    localStorage.setItem('products', JSON.stringify(updatedProducts));
+    try {
+      const filteredProducts = products.filter(p => p.id !== id);
+      setProducts(filteredProducts);
+      console.log('Product deleted successfully');
+    } catch (error) {
+      console.error("Error deleting product: ", error);
+      throw error;
+    }
   };
 
   const getProduct = (id) => {

@@ -57,6 +57,50 @@ A modern, responsive e-commerce website for customized photo frames and accessor
    - The website will open automatically at `http://localhost:3000`
    - If it doesn't open automatically, visit the URL manually
 
+## 🔥 Firebase Cloud Storage Setup (Important!)
+
+This app uses Firebase Cloud Storage for automatic product image uploads and real-time website updates.
+
+### Quick Setup (5 minutes)
+
+**For detailed setup, see: [FIREBASE_QUICK_START.md](./FIREBASE_QUICK_START.md)**
+
+1. Create Firebase project at https://console.firebase.google.com/
+2. Get your Firebase credentials from Project Settings
+3. Copy credentials to `.env` file in project root
+4. Enable Firestore Database (test mode)
+5. Enable Firebase Storage (test mode)
+6. Restart dev server: `npm start`
+
+**That's it!** Now:
+- Admin can upload product images from Admin Panel
+- Images automatically store in Firebase Cloud Storage
+- Product data saves to Firestore Database
+- New products appear on website instantly
+- Everything syncs in real-time
+
+### Documentation
+
+- **Quick Start**: [FIREBASE_QUICK_START.md](./FIREBASE_QUICK_START.md) - 5 minute setup
+- **Full Guide**: [FIREBASE_SETUP_GUIDE.md](./FIREBASE_SETUP_GUIDE.md) - Detailed instructions
+- **Testing**: [FIREBASE_TESTING_GUIDE.md](./FIREBASE_TESTING_GUIDE.md) - Verify everything works
+
+### Admin Panel Features
+
+- **Add Products**: Fill form, upload image, set prices for sizes/shapes
+- **Edit Products**: Modify existing products and re-upload images
+- **Delete Products**: Remove products instantly
+- **Real-time Sync**: Changes appear on website immediately without refresh
+
+### Deployment Notes
+
+When deploying (Vercel, Netlify, etc.):
+1. Add all environment variables to your deployment platform
+2. Add your deployed domain to Firebase Authentication → Authorized Domains
+3. Test admin panel on deployed site
+
+---
+
 ## 📋 Usage Guide
 
 ### For Customers

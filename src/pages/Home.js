@@ -20,15 +20,15 @@ const Home = () => {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[500px] md:min-h-[600px] lg:min-h-[700px] flex items-center justify-center overflow-hidden">
         {/* Animated Gradient Background */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 animate-gradient-shift" />
         
         {/* Animated Background Shapes */}
         <div className="absolute inset-0 opacity-20 md:opacity-30">
-          <div className="absolute top-10 md:top-20 left-5 md:left-10 w-40 md:w-72 h-40 md:h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow" />
-          <div className="absolute top-20 md:top-40 right-5 md:right-10 w-40 md:w-72 h-40 md:h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow" style={{ animationDelay: '2s' }} />
-          <div className="absolute bottom-10 md:bottom-20 left-1/2 w-40 md:w-72 h-40 md:h-72 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow" style={{ animationDelay: '4s' }} />
+          <div className="absolute top-0 md:top-5 left-0 md:left-5 w-32 md:w-56 h-32 md:h-56 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow" />
+          <div className="absolute top-5 md:top-20 right-0 md:right-5 w-32 md:w-56 h-32 md:h-56 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow" style={{ animationDelay: '2s' }} />
+          <div className="absolute bottom-0 md:bottom-5 left-1/2 w-32 md:w-56 h-32 md:h-56 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow" style={{ animationDelay: '4s' }} />
         </div>
 
         {/* Floating Product Cards Background - Hidden on mobile */}
@@ -160,7 +160,7 @@ const Home = () => {
             </div>
           </ScrollReveal>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
             {featuredProducts.map((product, index) => (
               <ScrollReveal key={product.id} direction="up" delay={index * 0.1}>
                 <ProductCard product={product} />
