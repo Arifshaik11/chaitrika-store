@@ -101,18 +101,8 @@ const defaultProducts = [
 ];
 
 export const ProductProvider = ({ children }) => {
-  const [products, setProducts] = useState(() => {
-    // Load from localStorage on initial load
-    try {
-      const saved = localStorage.getItem('chaitrika_products');
-      return saved ? JSON.parse(saved) : defaultProducts;
-    } catch (error) {
-      console.error('Error loading products from localStorage:', error);
-      return defaultProducts;
-    }
-  });
-
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [products, setProducts] = useState(defaultProducts); // Start with defaults
+  const [isFirestoreConnected, setIsFirestoreConnected] = useState(false);
 
   // Fetch products from Firestore on component mount
   useEffect(() => {
@@ -120,6 +110,8 @@ export const ProductProvider = ({ children }) => {
       try {
         const productsRef = collection(db, 'products');
         const unsubscribe = onSnapshot(productsRef, async (snapshot) => {
+          setIsFirestoreConnected(true);
+          
           if (!snapshot.empty) {
             const firestoreProducts = snapshot.docs.map(doc => ({
               id: doc.id,
@@ -127,32 +119,50 @@ export const ProductProvider = ({ children }) => {
             }));
             setProducts(firestoreProducts);
             localStorage.setItem('chaitrika_products', JSON.stringify(firestoreProducts));
-            console.log('Products loaded from Firestore:', firestoreProducts);
-            setIsInitialized(true);
+            console.log('✅ Products loaded from Firestore:', firestoreProducts.length, 'products');
           } else {
             // If Firestore is empty, initialize with default products
-            console.log('Firestore is empty, initializing with default products...');
+            console.log('🔄 Firestore is empty, initializing with default products...');
             await initializeDefaultProducts();
-            setIsInitialized(true);
+          }
+        }, (error) => {
+          console.error('❌ Firestore connection error:', error);
+          // Fallback to localStorage if Firestore fails
+          try {
+            const saved = localStorage.getItem('chaitrika_products');
+            if (saved) {
+              const localProducts = JSON.parse(saved);
+              setProducts(localProducts);
+              console.log('📱 Using localStorage fallback:', localProducts.length, 'products');
+            }
+          } catch (localError) {
+            console.error('❌ LocalStorage error:', localError);
           }
         });
+        
         return unsubscribe;
       } catch (error) {
-        console.error('Error fetching products from Firestore:', error);
-        setIsInitialized(true);
+        console.error('❌ Error setting up Firestore listener:', error);
       }
     };
 
     const initializeDefaultProducts = async () => {
       try {
+        console.log('🚀 Initializing default products in Firestore...');
+        const batch = [];
+        
         for (const product of defaultProducts) {
-          await setDoc(doc(db, 'products', product.id), product);
+          await setDoc(doc(db, 'products', product.id), {
+            ...product,
+            createdAt: new Date().toISOString()
+          });
         }
+        
         setProducts(defaultProducts);
         localStorage.setItem('chaitrika_products', JSON.stringify(defaultProducts));
-        console.log('Default products initialized in Firestore');
+        console.log('✅ Default products initialized successfully');
       } catch (error) {
-        console.error('Error initializing default products:', error);
+        console.error('❌ Error initializing default products:', error);
       }
     };
 
@@ -169,7 +179,7 @@ export const ProductProvider = ({ children }) => {
     }
   }, [products]);
 
-  const addProduct = (productData) => {
+  const addProduct = async (productData) => {
     try {
       const newProduct = {
         ...productData,
@@ -177,18 +187,19 @@ export const ProductProvider = ({ children }) => {
         createdAt: new Date().toISOString()
       };
       
-      // Add to Firestore
-      setDoc(doc(db, 'products', newProduct.id), newProduct).then(() => {
-        console.log('Product saved to Firestore:', newProduct);
-      }).catch(error => {
-        console.error('Error saving to Firestore:', error);
-      });
-
-      setProducts([...products, newProduct]);
-      console.log('Product added successfully:', newProduct);
+      console.log('🔄 Adding product to Firestore:', newProduct.name);
+      
+      // Add to Firestore first
+      await setDoc(doc(db, 'products', newProduct.id), newProduct);
+      console.log('✅ Product saved to Firestore successfully');
+      
+      // Update local state (will be overridden by Firestore listener anyway)
+      setProducts(prev => [...prev, newProduct]);
+      
+      return newProduct;
     } catch (error) {
-      console.error("Error adding product: ", error);
-      throw error;
+      console.error("❌ Error adding product:", error);
+      throw new Error(`Failed to add product: ${error.message}`);
     }
   };
 

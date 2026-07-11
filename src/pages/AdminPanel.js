@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useProducts } from '../context/ProductContext';
+import FirestoreDebug from '../components/FirestoreDebug';
 import { 
   Plus, 
   Edit, 
@@ -173,12 +174,14 @@ const AdminPanel = () => {
 
       if (editingProduct) {
         await updateProduct(editingProduct.id, productData);
+        alert('Product updated successfully!');
       } else {
-        await addProduct(productData);
+        const result = await addProduct(productData);
+        console.log('✅ Product added with ID:', result.id);
+        alert('Product added successfully!');
       }
 
       resetForm();
-      alert(editingProduct ? 'Product updated successfully!' : 'Product added successfully!');
     } catch (error) {
       console.error("Error saving product: ", error);
       alert("Failed to save product: " + error.message);
@@ -231,6 +234,7 @@ const AdminPanel = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <FirestoreDebug />
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
         <button
