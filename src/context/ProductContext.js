@@ -1,7 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { doc, setDoc, collection, onSnapshot, addDoc, updateDoc, deleteDoc, getDocs, query } from 'firebase/firestore';
-import { db } from '../firebase';
 
 const ProductContext = createContext();
 
@@ -101,73 +98,16 @@ const defaultProducts = [
 ];
 
 export const ProductProvider = ({ children }) => {
-  const [products, setProducts] = useState(defaultProducts); // Start with defaults
-  const [isFirestoreConnected, setIsFirestoreConnected] = useState(false);
-
-  // Fetch products from Firestore on component mount
-  useEffect(() => {
-    const fetchProductsFromFirestore = async () => {
-      try {
-        const productsRef = collection(db, 'products');
-        const unsubscribe = onSnapshot(productsRef, async (snapshot) => {
-          setIsFirestoreConnected(true);
-          
-          if (!snapshot.empty) {
-            const firestoreProducts = snapshot.docs.map(doc => ({
-              id: doc.id,
-              ...doc.data()
-            }));
-            setProducts(firestoreProducts);
-            localStorage.setItem('chaitrika_products', JSON.stringify(firestoreProducts));
-            console.log('Products synced from Firestore:', firestoreProducts.length, 'items');
-          } else {
-            // If Firestore is empty, initialize with default products
-            console.log('Initializing products in Firestore...');
-            await initializeDefaultProducts();
-          }
-        }, (error) => {
-          console.error('❌ Firestore connection error:', error);
-          // Fallback to localStorage if Firestore fails
-          try {
-            const saved = localStorage.getItem('chaitrika_products');
-            if (saved) {
-              const localProducts = JSON.parse(saved);
-              setProducts(localProducts);
-              console.log('📱 Using localStorage fallback:', localProducts.length, 'products');
-            }
-          } catch (localError) {
-            console.error('❌ LocalStorage error:', localError);
-          }
-        });
-        
-        return unsubscribe;
-      } catch (error) {
-        console.error('❌ Error setting up Firestore listener:', error);
-      }
-    };
-
-    const initializeDefaultProducts = async () => {
-      try {
-        console.log('🚀 Initializing default products in Firestore...');
-        const batch = [];
-        
-        for (const product of defaultProducts) {
-          await setDoc(doc(db, 'products', product.id), {
-            ...product,
-            createdAt: new Date().toISOString()
-          });
-        }
-        
-        setProducts(defaultProducts);
-        localStorage.setItem('chaitrika_products', JSON.stringify(defaultProducts));
-        console.log('Default products initialized successfully');
-      } catch (error) {
-        console.error('❌ Error initializing default products:', error);
-      }
-    };
-
-    fetchProductsFromFirestore();
-  }, []);
+  const [products, setProducts] = useState(() => {
+    // Load from localStorage on initial load
+    try {
+      const saved = localStorage.getItem('chaitrika_products');
+      return saved ? JSON.parse(saved) : defaultProducts;
+    } catch (error) {
+      console.error('Error loading products from localStorage:', error);
+      return defaultProducts;
+    }
+  });
 
   // Save to localStorage whenever products change
   useEffect(() => {
@@ -179,43 +119,11 @@ export const ProductProvider = ({ children }) => {
     }
   }, [products]);
 
-  const addProduct = async (productData) => {
-    try {
-      const newProduct = {
-        ...productData,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString()
-      };
-      
-      console.log('🔄 Adding product to Firestore:', newProduct.name);
-      
-      // Add to Firestore first
-      await setDoc(doc(db, 'products', newProduct.id), newProduct);
-      console.log('✅ Product saved to Firestore successfully');
-      
-      // Update local state (will be overridden by Firestore listener anyway)
-      setProducts(prev => [...prev, newProduct]);
-      
-      return newProduct;
-    } catch (error) {
-      console.error("❌ Error adding product:", error);
-      throw new Error(`Failed to add product: ${error.message}`);
-    }
-  };
-
   const updateProduct = (id, productData) => {
     try {
       const updatedProducts = products.map(p => 
         p.id === id ? { ...p, ...productData } : p
       );
-      
-      // Update in Firestore
-      updateDoc(doc(db, 'products', id), productData).then(() => {
-        console.log('Product updated in Firestore');
-      }).catch(error => {
-        console.error('Error updating in Firestore:', error);
-      });
-
       setProducts(updatedProducts);
       console.log('Product updated successfully');
     } catch (error) {
@@ -227,14 +135,6 @@ export const ProductProvider = ({ children }) => {
   const deleteProduct = (id) => {
     try {
       const filteredProducts = products.filter(p => p.id !== id);
-      
-      // Delete from Firestore
-      deleteDoc(doc(db, 'products', id)).then(() => {
-        console.log('Product deleted from Firestore');
-      }).catch(error => {
-        console.error('Error deleting from Firestore:', error);
-      });
-
       setProducts(filteredProducts);
       console.log('Product deleted successfully');
     } catch (error) {
@@ -250,7 +150,6 @@ export const ProductProvider = ({ children }) => {
   return (
     <ProductContext.Provider value={{
       products,
-      addProduct,
       updateProduct,
       deleteProduct,
       getProduct

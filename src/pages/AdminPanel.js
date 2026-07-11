@@ -3,34 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useProducts } from '../context/ProductContext';
 import { 
-  Plus, 
   Edit, 
-  Trash2, 
   Save, 
   X, 
-  Package, 
-  DollarSign,
-  Upload,
-  Image as ImageIcon
+  Package,
+  Minus,
+  Trash2
 } from 'lucide-react';
 
 const AdminPanel = () => {
   const { isAdmin } = useAuth();
-  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
+  const { products, updateProduct, deleteProduct } = useProducts();
   const navigate = useNavigate();
   
-  const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [categories, setCategories] = useState(['magnetic', 'keychain', 'acrylic', 'mdf']);
-  const [newCategory, setNewCategory] = useState('');
-  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     category: 'magnetic',
     basePrice: '',
-    image: '',
-    imageFile: null,
     description: '',
     sizes: [{ size: '', price: '' }],
     shapes: [{ shape: '', price: '' }]
@@ -51,29 +42,11 @@ const AdminPanel = () => {
       name: '',
       category: 'magnetic',
       basePrice: '',
-      image: '',
-      imageFile: null,
       description: '',
       sizes: [{ size: '', price: '' }],
       shapes: [{ shape: '', price: '' }]
     });
-    setShowAddForm(false);
     setEditingProduct(null);
-  };
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setFormData(prev => ({
-          ...prev,
-          image: event.target.result,
-          imageFile: file
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   const handleInputChange = (e) => {
@@ -125,7 +98,7 @@ const AdminPanel = () => {
     e.preventDefault();
     
     // Validate form
-    if (!formData.name || !formData.description || !formData.image) {
+    if (!formData.name || !formData.description) {
       alert('Please fill in all required fields');
       return;
     }
@@ -147,18 +120,10 @@ const AdminPanel = () => {
     setIsSubmitting(true);
 
     try {
-      let imageUrl = formData.image;
-
-      // For local images (data URLs from file input), keep as is
-      // Images are stored as base64 data URLs in the database
-      // This works for small to medium image sizes
-
-      // Exclude raw file object from the database metadata
-      const { imageFile, ...cleanFormData } = formData;
-
       const productData = {
-        ...cleanFormData,
-        image: imageUrl,
+        name: formData.name,
+        category: formData.category,
+        description: formData.description,
         basePrice: parseInt(formData.basePrice) || Math.min(...validSizes.map(s => parseInt(s.price))),
         sizes: validSizes.map(size => ({
           size: size.size,
@@ -171,19 +136,13 @@ const AdminPanel = () => {
         customizable: true
       };
 
-      if (editingProduct) {
-        await updateProduct(editingProduct.id, productData);
-        alert('Product updated successfully!');
-      } else {
-        const result = await addProduct(productData);
-        console.log('✅ Product added with ID:', result.id);
-        alert('Product added successfully!');
-      }
+      await updateProduct(editingProduct.id, productData);
+      alert('Product updated successfully!');
 
       resetForm();
     } catch (error) {
-      console.error("Error saving product: ", error);
-      alert("Failed to save product: " + error.message);
+      console.error("Error updating product: ", error);
+      alert("Failed to update product: " + error.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -194,7 +153,6 @@ const AdminPanel = () => {
       name: product.name,
       category: product.category,
       basePrice: product.basePrice.toString(),
-      image: product.image,
       description: product.description,
       sizes: product.sizes.map(size => ({
         size: size.size,
@@ -206,7 +164,6 @@ const AdminPanel = () => {
       })) : [{ shape: '', price: '' }]
     });
     setEditingProduct(product);
-    setShowAddForm(true);
   };
 
   const handleDelete = (productId) => {
@@ -216,42 +173,21 @@ const AdminPanel = () => {
     }
   };
 
-  const handleAddCategory = () => {
-    if (newCategory.trim() === '') {
-      alert('Please enter a category name');
-      return;
-    }
-    if (categories.includes(newCategory.toLowerCase())) {
-      alert('This category already exists');
-      return;
-    }
-    setCategories([...categories, newCategory.toLowerCase()]);
-    setNewCategory('');
-    setShowNewCategoryInput(false);
-    alert(`Category "${newCategory}" added successfully!`);
-  };
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
-        <button
-          onClick={() => setShowAddForm(true)}
-          className="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors flex items-center space-x-2"
-        >
-          <Plus className="h-5 w-5" />
-          <span>Add Product</span>
-        </button>
+        <h1 className="text-3xl font-bold text-gray-900">Product Management</h1>
+        <div className="text-sm text-gray-600">
+          Edit existing products below
+        </div>
       </div>
 
-      {/* Add/Edit Product Form */}
-      {showAddForm && (
+      {/* Edit Product Form */}
+      {editingProduct && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">
-                {editingProduct ? 'Edit Product' : 'Add New Product'}
-              </h2>
+              <h2 className="text-xl font-semibold">Edit Product</h2>
               <button
                 onClick={resetForm}
                 className="text-gray-500 hover:text-gray-700"
@@ -278,97 +214,17 @@ const AdminPanel = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category *
+                  Category
                 </label>
-                <div className="flex space-x-2">
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleInputChange}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    {categories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    onClick={() => setShowNewCategoryInput(!showNewCategoryInput)}
-                    className="px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center space-x-1"
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span className="text-sm">Add Category</span>
-                  </button>
-                </div>
-                
-                {showNewCategoryInput && (
-                  <div className="mt-3 flex space-x-2">
-                    <input
-                      type="text"
-                      value={newCategory}
-                      onChange={(e) => setNewCategory(e.target.value)}
-                      placeholder="Enter new category name"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddCategory}
-                      className="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                    >
-                      Add
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowNewCategoryInput(false);
-                        setNewCategory('');
-                      }}
-                      className="px-3 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Product Image *
-                </label>
-                <div className="relative">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    id="image-upload"
-                  />
-                  <label
-                    htmlFor="image-upload"
-                    className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors"
-                  >
-                    <div className="text-center">
-                      {formData.image ? (
-                        <div>
-                          <img
-                            src={formData.image}
-                            alt="Preview"
-                            className="w-32 h-32 object-cover rounded-lg mx-auto mb-2"
-                          />
-                          <p className="text-sm text-primary font-medium">Click to change image</p>
-                        </div>
-                      ) : (
-                        <div>
-                          <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                          <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
-                          <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                        </div>
-                      )}
-                    </div>
-                  </label>
-                </div>
+                <input
+                  type="text"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="Product category"
+                  readOnly
+                />
               </div>
 
               <div>
@@ -412,7 +268,7 @@ const AdminPanel = () => {
                         onClick={() => removeSizeField(index)}
                         className="text-red-500 hover:text-red-700 px-2"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Minus className="h-4 w-4" />
                       </button>
                     )}
                   </div>
@@ -453,7 +309,7 @@ const AdminPanel = () => {
                         onClick={() => removeShapeField(index)}
                         className="text-red-500 hover:text-red-700 px-2"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Minus className="h-4 w-4" />
                       </button>
                     )}
                   </div>
@@ -481,8 +337,8 @@ const AdminPanel = () => {
                   <Save className="h-4 w-4" />
                   <span>
                     {isSubmitting 
-                      ? 'Saving Product...' 
-                      : (editingProduct ? 'Update Product' : 'Add Product')}
+                      ? 'Updating Product...' 
+                      : 'Update Product'}
                   </span>
                 </button>
                 <button
