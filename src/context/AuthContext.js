@@ -11,8 +11,8 @@ export const useAuth = () => {
 };
 
 const ADMIN_CREDENTIALS = {
-  username: 'admin',
-  password: 'admin123'
+  username: 'chaitrika',
+  password: 'chaitrika@wrap'
 };
 
 export const AuthProvider = ({ children }) => {
@@ -20,8 +20,19 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const adminStatus = localStorage.getItem('isAdmin');
-    if (adminStatus === 'true') {
-      setIsAdmin(true);
+    const loginTime = localStorage.getItem('adminLoginTime');
+    const currentTime = new Date().getTime();
+    
+    // Session expires after 24 hours
+    if (adminStatus === 'true' && loginTime) {
+      const timeDiff = currentTime - parseInt(loginTime);
+      if (timeDiff < 24 * 60 * 60 * 1000) { // 24 hours in milliseconds
+        setIsAdmin(true);
+      } else {
+        // Session expired
+        localStorage.removeItem('isAdmin');
+        localStorage.removeItem('adminLoginTime');
+      }
     }
   }, []);
 
@@ -29,6 +40,7 @@ export const AuthProvider = ({ children }) => {
     if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
       setIsAdmin(true);
       localStorage.setItem('isAdmin', 'true');
+      localStorage.setItem('adminLoginTime', new Date().getTime().toString());
       return true;
     }
     return false;
@@ -37,6 +49,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setIsAdmin(false);
     localStorage.removeItem('isAdmin');
+    localStorage.removeItem('adminLoginTime');
   };
 
   return (

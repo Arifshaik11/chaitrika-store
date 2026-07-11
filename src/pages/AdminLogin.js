@@ -118,12 +118,12 @@ const AdminLogin = () => {
             </button>
           </form>
           
-          <div className="mt-6 p-4 bg-gray-50 rounded-md">
-            <p className="text-sm text-gray-600 text-center">
-              Demo Credentials:
+          <div className="mt-6 p-4 bg-blue-50 rounded-md border border-blue-200">
+            <p className="text-sm text-blue-800 text-center">
+              🔐 Secure Admin Access
             </p>
-            <p className="text-sm text-gray-800 text-center font-mono">
-             
+            <p className="text-xs text-blue-600 text-center mt-1">
+              Contact administrator for login credentials
             </p>
           </div>
         </div>
