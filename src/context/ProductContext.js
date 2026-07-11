@@ -119,10 +119,10 @@ export const ProductProvider = ({ children }) => {
             }));
             setProducts(firestoreProducts);
             localStorage.setItem('chaitrika_products', JSON.stringify(firestoreProducts));
-            console.log('✅ Products loaded from Firestore:', firestoreProducts.length, 'products');
+            console.log('Products synced from Firestore:', firestoreProducts.length, 'items');
           } else {
             // If Firestore is empty, initialize with default products
-            console.log('🔄 Firestore is empty, initializing with default products...');
+            console.log('Initializing products in Firestore...');
             await initializeDefaultProducts();
           }
         }, (error) => {
@@ -160,7 +160,7 @@ export const ProductProvider = ({ children }) => {
         
         setProducts(defaultProducts);
         localStorage.setItem('chaitrika_products', JSON.stringify(defaultProducts));
-        console.log('✅ Default products initialized successfully');
+        console.log('Default products initialized successfully');
       } catch (error) {
         console.error('❌ Error initializing default products:', error);
       }
