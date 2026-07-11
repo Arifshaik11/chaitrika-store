@@ -17,8 +17,8 @@ const Checkout = () => {
 
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Admin WhatsApp number (you can change this)
-  const ADMIN_WHATSAPP = '918688273233'; // Replace with actual admin WhatsApp number
+  // Admin WhatsApp number
+  const ADMIN_WHATSAPP = '918499999498'; // Chaitrika Wrap admin number
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
