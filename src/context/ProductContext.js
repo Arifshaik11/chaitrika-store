@@ -171,11 +171,9 @@ export const ProductProvider = ({ children }) => {
         category: productData.category,
         description: productData.description,
         image: productData.image,
-        basePrice: productData.basePrice || 0,
         sizes: productData.sizes || [],
         shapes: productData.shapes || [],
-        customizable: true,
-        created_at: new Date().toISOString()
+        customizable: true
       };
 
       const { data, error } = await supabase
@@ -204,7 +202,6 @@ export const ProductProvider = ({ children }) => {
         category: productData.category,
         description: productData.description,
         image: productData.image,
-        basePrice: productData.basePrice || 0,
         sizes: productData.sizes || [],
         shapes: productData.shapes || [],
         customizable: true
