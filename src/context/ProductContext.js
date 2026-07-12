@@ -104,63 +104,64 @@ export const ProductProvider = ({ children }) => {
 
   // Fetch products from Supabase on mount
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchAndSubscribe = async () => {
       try {
+        // Initial fetch
         const { data, error } = await supabase
           .from('products')
-          .select('*');
+          .select('*')
+          .order('created_at', { ascending: false });
 
         if (error) {
           console.error('Error fetching products:', error);
-          // Use default products if fetch fails
-          setProducts(defaultProducts);
-        } else if (data && data.length > 0) {
-          setProducts(data);
-          console.log('Products fetched from Supabase:', data.length);
-        } else {
-          // Initialize with default products if table is empty
-          await initializeDefaultProducts();
+          setLoading(false);
+          return;
         }
+
+        if (data && data.length > 0) {
+          console.log('Products fetched:', data.length);
+          setProducts(data);
+        } else {
+          console.log('No products found, using defaults');
+          setProducts(defaultProducts);
+        }
+
+        setLoading(false);
+
+        // Set up real-time subscription
+        const subscription = supabase
+          .channel('products-realtime')
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'products' },
+            (payload) => {
+              console.log('Product change detected:', payload);
+              // Refetch all products when changes occur
+              fetchAll();
+            }
+          )
+          .subscribe();
+
+        return () => {
+          subscription.unsubscribe();
+        };
       } catch (err) {
-        console.error('Error in fetchProducts:', err);
-        setProducts(defaultProducts);
-      } finally {
+        console.error('Error in fetchAndSubscribe:', err);
         setLoading(false);
       }
     };
 
-    const initializeDefaultProducts = async () => {
-      try {
-        const { error } = await supabase
-          .from('products')
-          .insert(defaultProducts);
-
-        if (error) {
-          console.error('Error initializing products:', error);
-        } else {
-          setProducts(defaultProducts);
-          console.log('Default products initialized');
-        }
-      } catch (err) {
-        console.error('Error in initializeDefaultProducts:', err);
+    const fetchAll = async () => {
+      const { data } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (data) {
+        setProducts(data);
       }
     };
 
-    // Set up real-time subscription
-    const subscription = supabase
-      .channel('products-channel')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, (payload) => {
-        console.log('Product change detected:', payload);
-        // Refetch products when changes occur
-        fetchProducts();
-      })
-      .subscribe();
-
-    fetchProducts();
-
-    return () => {
-      subscription.unsubscribe();
-    };
+    fetchAndSubscribe();
   }, []);
 
   const addProduct = async (productData) => {
