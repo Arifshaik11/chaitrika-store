@@ -48,7 +48,12 @@ const Products = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7 }}
+      className="min-h-screen bg-gradient-to-b from-white to-blue-50"
+    >
       {/* Filter Modal - Mobile/Tablet */}
       {showFilterModal && (
         <motion.div
@@ -157,12 +162,9 @@ const Products = () => {
           </motion.div>
         </motion.div>
       )}
+
       {/* Banner Section */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="relative h-48 md:h-64 lg:h-80 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 overflow-hidden"
-      >
+      <div className="relative h-48 md:h-64 lg:h-80 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0 opacity-20">
           <img
@@ -174,12 +176,7 @@ const Products = () => {
 
         {/* Content */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-center text-white z-10 px-3 xs:px-4"
-          >
+          <div className="text-center text-white z-10 px-3 xs:px-4">
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 font-display">
               Craft Memories That Last Forever
             </h1>
@@ -193,18 +190,14 @@ const Products = () => {
               <ChevronRight className="h-3 md:h-4 w-3 md:w-4" />
               <span className="text-white">Products</span>
             </div>
-          </motion.div>
+          </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         {/* Search Bar */}
-        <motion.div
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="mb-6 md:mb-8"
-        >
+        <div className="mb-6 md:mb-8">
           <div className="relative">
             <Search className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 md:h-5 w-4 md:w-5 text-gray-400 pointer-events-none" />
             <input
@@ -215,24 +208,15 @@ const Products = () => {
               className="w-full pl-10 md:pl-12 pr-3 md:pr-4 py-2.5 md:py-3 bg-white rounded-lg md:rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent shadow-soft transition-all text-sm md:text-base"
             />
           </div>
-        </motion.div>
+        </div>
 
         <div className="flex flex-col gap-6 md:gap-8">
           {/* Products Grid - Full Width */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex-1 w-full"
-          >
+          <div className="flex-1 w-full">
             <div className="mb-6 flex justify-between items-center flex-wrap gap-2">
-              <motion.p
-                key={filteredProducts.length}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-gray-600 font-medium text-sm md:text-base"
-              >
+              <p className="text-gray-600 font-medium text-sm md:text-base">
                 Showing <span className="text-primary font-bold">{filteredProducts.length}</span> products
-              </motion.p>
+              </p>
             </div>
 
             {filteredProducts.length > 0 ? (
@@ -274,10 +258,10 @@ const Products = () => {
                 </motion.button>
               </motion.div>
             )}
-          </motion.div>
+          </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

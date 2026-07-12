@@ -7,7 +7,7 @@ import { ProductProvider } from './context/ProductContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ScrollProgressBar from './components/ScrollProgressBar';
-import GiftUnwrapAnimation from './components/GiftUnwrapAnimation';
+import ElegantLogoIntro from './components/ElegantLogoIntro';
 import Home from './pages/Home';
 import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
@@ -17,8 +17,8 @@ import AdminPanel from './pages/AdminPanel';
 import Checkout from './pages/Checkout';
 
 function App() {
-  const [showAnimation, setShowAnimation] = useState(false);
-  const [animationComplete, setAnimationComplete] = useState(false);
+  const [showIntro, setShowIntro] = useState(false);
+  const [introComplete, setIntroComplete] = useState(false);
 
   useEffect(() => {
     // Initialize Lenis for smooth scrolling
@@ -45,20 +45,20 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Check if animation has been shown in this session
-    const hasSeenAnimation = sessionStorage.getItem('hasSeenGiftAnimation');
+    // Check if intro has been shown in this session
+    const hasSeenIntro = sessionStorage.getItem('hasSeenElegantIntro');
     
-    if (!hasSeenAnimation) {
-      setShowAnimation(true);
+    if (!hasSeenIntro) {
+      setShowIntro(true);
     } else {
-      setAnimationComplete(true);
+      setIntroComplete(true);
     }
   }, []);
 
-  const handleAnimationComplete = () => {
-    sessionStorage.setItem('hasSeenGiftAnimation', 'true');
-    setShowAnimation(false);
-    setAnimationComplete(true);
+  const handleIntroComplete = () => {
+    sessionStorage.setItem('hasSeenElegantIntro', 'true');
+    setShowIntro(false);
+    setIntroComplete(true);
   };
 
   return (
@@ -66,13 +66,11 @@ function App() {
       <ProductProvider>
         <CartProvider>
           <ScrollProgressBar />
-          {showAnimation && !animationComplete && (
-            <GiftUnwrapAnimation onComplete={handleAnimationComplete} />
+          {showIntro && !introComplete && (
+            <ElegantLogoIntro onComplete={handleIntroComplete} />
           )}
           
-          <div className={`min-h-screen flex flex-col bg-gray-50 transition-opacity duration-500 ${
-            showAnimation ? 'opacity-0' : 'opacity-100'
-          }`}>
+          <div className="min-h-screen flex flex-col bg-gray-50">
             <Header />
             <main className="flex-1">
               <Routes>

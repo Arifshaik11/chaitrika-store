@@ -170,6 +170,7 @@ export const ProductProvider = ({ children }) => {
         id: Date.now().toString(),
         name: productData.name,
         category: productData.category,
+        basePrice: productData.basePrice || 0,
         description: productData.description,
         image: productData.image,
         sizes: productData.sizes || [],
@@ -187,7 +188,12 @@ export const ProductProvider = ({ children }) => {
         throw new Error(`Failed to add product: ${error.message}`);
       }
 
-      console.log('Product added successfully');
+      console.log('Product added successfully:', data);
+      // Use returned data if available
+      if (data && data.length > 0) {
+        setProducts([...products, data[0]]);
+        return data[0];
+      }
       setProducts([...products, newProduct]);
       return newProduct;
     } catch (error) {
@@ -201,6 +207,7 @@ export const ProductProvider = ({ children }) => {
       const cleanData = {
         name: productData.name,
         category: productData.category,
+        basePrice: productData.basePrice || 0,
         description: productData.description,
         image: productData.image,
         sizes: productData.sizes || [],
