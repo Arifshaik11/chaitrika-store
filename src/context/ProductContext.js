@@ -166,8 +166,15 @@ export const ProductProvider = ({ children }) => {
   const addProduct = async (productData) => {
     try {
       const newProduct = {
-        ...productData,
         id: Date.now().toString(),
+        name: productData.name,
+        category: productData.category,
+        description: productData.description,
+        image: productData.image,
+        basePrice: productData.basePrice || 0,
+        sizes: productData.sizes || [],
+        shapes: productData.shapes || [],
+        customizable: true,
         created_at: new Date().toISOString()
       };
 
@@ -177,6 +184,7 @@ export const ProductProvider = ({ children }) => {
         .select();
 
       if (error) {
+        console.error('Supabase error:', error);
         throw new Error(`Failed to add product: ${error.message}`);
       }
 
@@ -191,9 +199,20 @@ export const ProductProvider = ({ children }) => {
 
   const updateProduct = async (id, productData) => {
     try {
+      const cleanData = {
+        name: productData.name,
+        category: productData.category,
+        description: productData.description,
+        image: productData.image,
+        basePrice: productData.basePrice || 0,
+        sizes: productData.sizes || [],
+        shapes: productData.shapes || [],
+        customizable: true
+      };
+
       const { error } = await supabase
         .from('products')
-        .update(productData)
+        .update(cleanData)
         .eq('id', id);
 
       if (error) {
@@ -201,7 +220,7 @@ export const ProductProvider = ({ children }) => {
       }
 
       const updatedProducts = products.map(p =>
-        p.id === id ? { ...p, ...productData } : p
+        p.id === id ? { ...p, ...cleanData } : p
       );
       setProducts(updatedProducts);
       console.log('Product updated successfully');
