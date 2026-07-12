@@ -3,26 +3,31 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useProducts } from '../context/ProductContext';
 import { 
+  Plus,
   Edit, 
   Save, 
   X, 
   Package,
   Minus,
   Trash2,
-  Plus
+  Upload
 } from 'lucide-react';
 
 const AdminPanel = () => {
   const { isAdmin } = useAuth();
-  const { products, updateProduct, deleteProduct } = useProducts();
+  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
   const navigate = useNavigate();
   
+  const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categories, setCategories] = useState(['magnetic', 'keychain', 'acrylic', 'mdf']);
   const [formData, setFormData] = useState({
     name: '',
     category: 'magnetic',
     basePrice: '',
+    image: '',
+    imageFile: null,
     description: '',
     sizes: [{ size: '', price: '' }],
     shapes: [{ shape: '', price: '' }]
@@ -43,16 +48,34 @@ const AdminPanel = () => {
       name: '',
       category: 'magnetic',
       basePrice: '',
+      image: '',
+      imageFile: null,
       description: '',
       sizes: [{ size: '', price: '' }],
       shapes: [{ shape: '', price: '' }]
     });
+    setShowAddForm(false);
     setEditingProduct(null);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setFormData(prev => ({
+          ...prev,
+          image: event.target.result,
+          imageFile: file
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSizeChange = (index, field, value) => {
@@ -99,7 +122,7 @@ const AdminPanel = () => {
     e.preventDefault();
     
     // Validate form
-    if (!formData.name || !formData.description) {
+    if (!formData.name || !formData.description || !formData.image) {
       alert('Please fill in all required fields');
       return;
     }
@@ -121,10 +144,13 @@ const AdminPanel = () => {
     setIsSubmitting(true);
 
     try {
+      let imageUrl = formData.image;
+
       const productData = {
         name: formData.name,
         category: formData.category,
         description: formData.description,
+        image: imageUrl,
         basePrice: parseInt(formData.basePrice) || Math.min(...validSizes.map(s => parseInt(s.price))),
         sizes: validSizes.map(size => ({
           size: size.size,
@@ -137,24 +163,29 @@ const AdminPanel = () => {
         customizable: true
       };
 
-      await updateProduct(editingProduct.id, productData);
-      alert('Product updated successfully!');
+      if (editingProduct) {
+        await updateProduct(editingProduct.id, productData);
+        alert('Product updated successfully!');
+      } else {
+        await addProduct(productData);
+        alert('Product added successfully!');
+      }
 
       resetForm();
     } catch (error) {
-      console.error("Error updating product: ", error);
-      alert("Failed to update product: " + error.message);
+      console.error("Error saving product: ", error);
+      alert("Failed to save product: " + error.message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleEdit = (product) => {
-    console.log('Editing product:', product); // Debug log
     setFormData({
       name: product.name,
       category: product.category,
       basePrice: product.basePrice.toString(),
+      image: product.image,
       description: product.description,
       sizes: product.sizes.map(size => ({
         size: size.size,
@@ -166,7 +197,7 @@ const AdminPanel = () => {
       })) : [{ shape: '', price: '' }]
     });
     setEditingProduct(product);
-    console.log('Form data set:', formData); // Debug log
+    setShowAddForm(true);
   };
 
   const handleDelete = (productId) => {
@@ -179,29 +210,30 @@ const AdminPanel = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Product Management</h1>
-        <div className="text-sm text-gray-600">
-          Edit existing products below
-        </div>
+        <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
+        <button
+          onClick={() => setShowAddForm(true)}
+          className="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors flex items-center space-x-2"
+        >
+          <Plus className="h-5 w-5" />
+          <span>Add Product</span>
+        </button>
       </div>
 
-      {/* Edit Product Form */}
-      {editingProduct && (
+      {/* Add/Edit Product Form */}
+      {showAddForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Edit Product: {editingProduct.name}</h2>
+              <h2 className="text-xl font-semibold">
+                {editingProduct ? 'Edit Product' : 'Add New Product'}
+              </h2>
               <button
                 onClick={resetForm}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <X className="h-6 w-6" />
               </button>
-            </div>
-
-            {/* Debug info */}
-            <div className="mb-4 p-2 bg-gray-100 rounded text-sm">
-              Editing: {editingProduct.name} | Form loaded: {formData.name ? 'Yes' : 'No'}
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -222,17 +254,58 @@ const AdminPanel = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
+                  Category *
                 </label>
-                <input
-                  type="text"
+                <select
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Product category"
-                  readOnly
-                />
+                >
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Product Image *
+                </label>
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="image-upload"
+                  />
+                  <label
+                    htmlFor="image-upload"
+                    className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors"
+                  >
+                    <div className="text-center">
+                      {formData.image ? (
+                        <div>
+                          <img
+                            src={formData.image}
+                            alt="Preview"
+                            className="w-32 h-32 object-cover rounded-lg mx-auto mb-2"
+                          />
+                          <p className="text-sm text-primary font-medium">Click to change image</p>
+                        </div>
+                      ) : (
+                        <div>
+                          <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                          <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
+                          <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                        </div>
+                      )}
+                    </div>
+                  </label>
+                </div>
               </div>
 
               <div>
@@ -345,8 +418,8 @@ const AdminPanel = () => {
                   <Save className="h-4 w-4" />
                   <span>
                     {isSubmitting 
-                      ? 'Updating Product...' 
-                      : 'Update Product'}
+                      ? 'Saving Product...' 
+                      : (editingProduct ? 'Update Product' : 'Add Product')}
                   </span>
                 </button>
                 <button

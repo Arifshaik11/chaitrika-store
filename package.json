@@ -9,6 +9,7 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.110.2",
     "firebase": "^12.16.0",
     "framer-motion": "^12.42.2",
     "gsap": "^3.15.0",

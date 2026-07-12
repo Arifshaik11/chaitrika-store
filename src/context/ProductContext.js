@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '../supabase';
 
 const ProductContext = createContext();
 
@@ -98,47 +99,134 @@ const defaultProducts = [
 ];
 
 export const ProductProvider = ({ children }) => {
-  const [products, setProducts] = useState(() => {
-    // Load from localStorage on initial load
-    try {
-      const saved = localStorage.getItem('chaitrika_products');
-      return saved ? JSON.parse(saved) : defaultProducts;
-    } catch (error) {
-      console.error('Error loading products from localStorage:', error);
-      return defaultProducts;
-    }
-  });
+  const [products, setProducts] = useState(defaultProducts);
+  const [loading, setLoading] = useState(true);
 
-  // Save to localStorage whenever products change
+  // Fetch products from Supabase on mount
   useEffect(() => {
-    try {
-      localStorage.setItem('chaitrika_products', JSON.stringify(products));
-      console.log('Products saved to localStorage');
-    } catch (error) {
-      console.error('Error saving products to localStorage:', error);
-    }
-  }, [products]);
+    const fetchProducts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*');
 
-  const updateProduct = (id, productData) => {
+        if (error) {
+          console.error('Error fetching products:', error);
+          // Use default products if fetch fails
+          setProducts(defaultProducts);
+        } else if (data && data.length > 0) {
+          setProducts(data);
+          console.log('Products fetched from Supabase:', data.length);
+        } else {
+          // Initialize with default products if table is empty
+          await initializeDefaultProducts();
+        }
+      } catch (err) {
+        console.error('Error in fetchProducts:', err);
+        setProducts(defaultProducts);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const initializeDefaultProducts = async () => {
+      try {
+        const { error } = await supabase
+          .from('products')
+          .insert(defaultProducts);
+
+        if (error) {
+          console.error('Error initializing products:', error);
+        } else {
+          setProducts(defaultProducts);
+          console.log('Default products initialized');
+        }
+      } catch (err) {
+        console.error('Error in initializeDefaultProducts:', err);
+      }
+    };
+
+    // Set up real-time subscription
+    const subscription = supabase
+      .channel('products-channel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, (payload) => {
+        console.log('Product change detected:', payload);
+        // Refetch products when changes occur
+        fetchProducts();
+      })
+      .subscribe();
+
+    fetchProducts();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const addProduct = async (productData) => {
     try {
-      const updatedProducts = products.map(p => 
+      const newProduct = {
+        ...productData,
+        id: Date.now().toString(),
+        created_at: new Date().toISOString()
+      };
+
+      const { data, error } = await supabase
+        .from('products')
+        .insert([newProduct])
+        .select();
+
+      if (error) {
+        throw new Error(`Failed to add product: ${error.message}`);
+      }
+
+      console.log('Product added successfully');
+      setProducts([...products, newProduct]);
+      return newProduct;
+    } catch (error) {
+      console.error('Error adding product:', error);
+      throw error;
+    }
+  };
+
+  const updateProduct = async (id, productData) => {
+    try {
+      const { error } = await supabase
+        .from('products')
+        .update(productData)
+        .eq('id', id);
+
+      if (error) {
+        throw new Error(`Failed to update product: ${error.message}`);
+      }
+
+      const updatedProducts = products.map(p =>
         p.id === id ? { ...p, ...productData } : p
       );
       setProducts(updatedProducts);
       console.log('Product updated successfully');
     } catch (error) {
-      console.error("Error updating product: ", error);
+      console.error('Error updating product:', error);
       throw error;
     }
   };
 
-  const deleteProduct = (id) => {
+  const deleteProduct = async (id) => {
     try {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        throw new Error(`Failed to delete product: ${error.message}`);
+      }
+
       const filteredProducts = products.filter(p => p.id !== id);
       setProducts(filteredProducts);
       console.log('Product deleted successfully');
     } catch (error) {
-      console.error("Error deleting product: ", error);
+      console.error('Error deleting product:', error);
       throw error;
     }
   };
@@ -150,6 +238,8 @@ export const ProductProvider = ({ children }) => {
   return (
     <ProductContext.Provider value={{
       products,
+      loading,
+      addProduct,
       updateProduct,
       deleteProduct,
       getProduct
