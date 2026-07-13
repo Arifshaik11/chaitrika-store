@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingCart, Home, Package, LogIn, Filter, Sparkles } from 'lucide-react';
+import { Menu, X, ShoppingCart, Home, Package, LogIn, Filter } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -138,24 +138,6 @@ const Header = () => {
 
           {/* Right Section */}
           <div className="flex items-center gap-3">
-            {/* Filter Button - Products Page only */}
-            {isProductsPage && (
-              <motion.button
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleFilterClick}
-                className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-white/70 hover:text-white transition-colors"
-                style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                }}
-                title="Toggle Filters"
-              >
-                <Filter className="w-4 h-4" />
-                <span className="hidden lg:block">Filter</span>
-              </motion.button>
-            )}
-
             {/* Cart Icon */}
             <motion.div whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}>
               <Link to="/cart" className="relative group">
