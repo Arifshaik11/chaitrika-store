@@ -87,27 +87,12 @@ const Home = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-white to-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 rounded-md" />
                 <div className="relative flex items-center justify-center">
                   Customize Frame
-                  <ChevronRight className="w-4 md:w-5 h-4 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </div>
               </Link>
             </div>
 
-            {/* Scroll Indicator - Moved Below */}
-            <div className="absolute bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-              <div className="flex flex-col items-center space-y-2">
-                <svg
-                  className="w-5 md:w-6 h-5 md:h-6 text-white opacity-75"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                </svg>
-              </div>
-            </div>
+            {/* Scroll Indicator - Hidden */}
+            <div className="hidden"></div>
           </div>
         </div>
 
