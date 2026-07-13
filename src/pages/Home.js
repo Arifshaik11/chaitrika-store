@@ -198,7 +198,10 @@ const Home = () => {
                   </div>
                 </div>
                 <div className="mb-2">
-                  <div className="text-4xl md:text-5xl font-bold text-black">300<span className="text-white">+</span></div>
+                  <span className="text-4xl md:text-5xl font-bold text-black">
+                    <AnimatedCounter end={300} duration={2} prefix="" suffix="" />
+                  </span>
+                  <span className="text-4xl md:text-5xl font-bold text-white">+</span>
                 </div>
                 <p className="text-base md:text-lg text-white/90">Happy Customers</p>
                 <p className="text-xs md:text-sm text-white/70 mt-2">
@@ -216,7 +219,10 @@ const Home = () => {
                   </div>
                 </div>
                 <div className="mb-2">
-                  <div className="text-4xl md:text-5xl font-bold text-black">300<span className="text-white">+</span></div>
+                  <span className="text-4xl md:text-5xl font-bold text-black">
+                    <AnimatedCounter end={300} duration={2} prefix="" suffix="" />
+                  </span>
+                  <span className="text-4xl md:text-5xl font-bold text-white">+</span>
                 </div>
                 <p className="text-base md:text-lg text-white/90">Orders Delivered</p>
                 <p className="text-xs md:text-sm text-white/70 mt-2">
