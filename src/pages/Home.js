@@ -1,448 +1,166 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useProducts } from '../context/ProductContext';
 import ProductCard from '../components/ProductCard';
+import AnimatedButton from '../components/AnimatedButton';
 import ScrollReveal from '../components/ScrollReveal';
 import AnimatedCounter from '../components/AnimatedCounter';
-import { ChevronRight, Users, Zap, Award, Sparkles, Star, Heart, ArrowDown } from 'lucide-react';
+import { Camera, ChevronRight, Sparkles, Users, Zap, Award } from 'lucide-react';
 
-/* ─── Aurora Background ─── */
-const AuroraBackground = () => {
-  const blobs = [
-    { color: '#7C3AED', x: '15%', y: '30%', size: 500, duration: 12 },
-    { color: '#A855F7', x: '70%', y: '20%', size: 400, duration: 15 },
-    { color: '#EC4899', x: '50%', y: '70%', size: 450, duration: 10 },
-    { color: '#6D28D9', x: '85%', y: '60%', size: 350, duration: 18 },
-  ];
-
-  return (
-    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-      {/* Base gradient */}
-      <div className="absolute inset-0" style={{ background: '#0F172A' }} />
-
-      {/* Aurora light layer */}
-      <motion.div
-        className="absolute inset-0 opacity-50"
-        animate={{
-          background: [
-            'radial-gradient(ellipse 80% 60% at 20% 40%, rgba(124,58,237,0.3) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 20%, rgba(168,85,247,0.2) 0%, transparent 55%), radial-gradient(ellipse 70% 60% at 50% 80%, rgba(236,72,153,0.25) 0%, transparent 60%)',
-            'radial-gradient(ellipse 70% 60% at 60% 30%, rgba(168,85,247,0.3) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 20% 70%, rgba(236,72,153,0.2) 0%, transparent 55%), radial-gradient(ellipse 80% 60% at 80% 60%, rgba(124,58,237,0.25) 0%, transparent 60%)',
-            'radial-gradient(ellipse 60% 70% at 40% 60%, rgba(236,72,153,0.3) 0%, transparent 60%), radial-gradient(ellipse 80% 50% at 70% 40%, rgba(124,58,237,0.2) 0%, transparent 55%), radial-gradient(ellipse 70% 60% at 30% 20%, rgba(168,85,247,0.25) 0%, transparent 60%)',
-            'radial-gradient(ellipse 80% 60% at 20% 40%, rgba(124,58,237,0.3) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 20%, rgba(168,85,247,0.2) 0%, transparent 55%), radial-gradient(ellipse 70% 60% at 50% 80%, rgba(236,72,153,0.25) 0%, transparent 60%)',
-          ]
-        }}
-        transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
-      />
-
-      {/* Floating blobs */}
-      {blobs.map((blob, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full"
-          style={{
-            left: blob.x, top: blob.y,
-            width: blob.size, height: blob.size,
-            background: `radial-gradient(circle, ${blob.color}33 0%, transparent 70%)`,
-            filter: 'blur(60px)',
-            transform: 'translate(-50%, -50%)',
-          }}
-          animate={{
-            x: [0, 60, -40, 0],
-            y: [0, -50, 30, 0],
-            scale: [1, 1.2, 0.9, 1],
-          }}
-          transition={{ duration: blob.duration, repeat: Infinity, ease: 'easeInOut', delay: i * 2 }}
-        />
-      ))}
-
-      {/* Floating particles */}
-      {Array.from({ length: 40 }).map((_, i) => (
-        <motion.div
-          key={`p-${i}`}
-          className="absolute rounded-full"
-          style={{
-            left: `${(i * 37 + 7) % 100}%`,
-            bottom: '-10px',
-            width: 2 + (i % 3),
-            height: 2 + (i % 3),
-            background: i % 3 === 0 ? 'rgba(168,85,247,0.7)' : i % 3 === 1 ? 'rgba(236,72,153,0.7)' : 'rgba(124,58,237,0.7)',
-          }}
-          animate={{
-            y: [0, -(600 + (i % 400))],
-            opacity: [0, 0.7, 0],
-            scale: [0, 1, 0],
-          }}
-          transition={{
-            duration: 6 + (i % 8),
-            delay: (i * 0.4) % 10,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
-        />
-      ))}
-
-      {/* Grid pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-        }}
-      />
-    </div>
-  );
-};
-
-/* ─── Floating Product Mockup ─── */
-const FloatingMockup = ({ style, animProps, children, delay = 0 }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 30 }}
-    animate={{ opacity: 1, y: 0, ...animProps }}
-    transition={{ delay, duration: 1, repeat: Infinity, repeatType: 'reverse' }}
-    style={{
-      position: 'absolute',
-      background: 'rgba(255,255,255,0.06)',
-      backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255,255,255,0.12)',
-      borderRadius: '20px',
-      boxShadow: '0 20px 60px rgba(124,58,237,0.2), inset 0 1px 0 rgba(255,255,255,0.1)',
-      ...style,
-    }}
-  >
-    {children}
-  </motion.div>
-);
-
-/* ─── Word-by-word heading ─── */
-const AnimatedHeading = ({ text, gradient = false }) => {
-  const words = text.split(' ');
-  return (
-    <span>
-      {words.map((word, i) => (
-        <motion.span
-          key={i}
-          className="inline-block mr-3"
-          initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ delay: 0.3 + i * 0.12, duration: 0.6, ease: 'easeOut' }}
-        >
-          {gradient ? (
-            <span style={{
-              background: 'linear-gradient(135deg, #A855F7, #EC4899)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}>
-              {word}
-            </span>
-          ) : word}
-        </motion.span>
-      ))}
-    </span>
-  );
-};
-
-/* ─── MAIN COMPONENT ─── */
 const Home = () => {
   const { products } = useProducts();
   const featuredProducts = products.slice(0, 4);
-  const heroRef = useRef(null);
+  const [isHeroVisible, setIsHeroVisible] = useState(false);
 
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-
-  const stats = [
-    { icon: Users, value: 300, suffix: '+', label: 'Happy Customers', desc: 'Trusted worldwide for quality', color: '#7C3AED' },
-    { icon: Zap, value: 300, suffix: '+', label: 'Orders Delivered', desc: 'Fast and reliable service', color: '#EC4899' },
-    { icon: Award, value: 99, suffix: '%', label: 'Quality Score', desc: 'Premium satisfaction', color: '#A855F7' },
-  ];
-
-  const steps = [
-    { num: '01', title: 'Choose', desc: 'Browse our premium collection and select your perfect product', icon: '🎯' },
-    { num: '02', title: 'Customize', desc: 'Upload your photo and personalize every detail with ease', icon: '✨' },
-    { num: '03', title: 'Order', desc: 'Complete your order via WhatsApp — quick and hassle-free', icon: '📦' },
-  ];
+  useEffect(() => {
+    // Trigger animation after component mounts
+    setIsHeroVisible(true);
+  }, []);
 
   return (
-    <div style={{ background: '#0F172A', minHeight: '100vh', color: '#fff', overflow: 'hidden' }}>
-      <AuroraBackground />
+    <div>
+      {/* Hero Section */}
+      <section className="relative min-h-[500px] md:min-h-[600px] lg:min-h-[700px] flex items-center justify-center overflow-hidden">
+        {/* Animated Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 animate-gradient-shift" />
+        
+        {/* Animated Background Shapes */}
+        <div className="absolute inset-0 opacity-20 md:opacity-30">
+          <div className="absolute top-0 md:top-5 left-0 md:left-5 w-32 md:w-56 h-32 md:h-56 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow" />
+          <div className="absolute top-5 md:top-20 right-0 md:right-5 w-32 md:w-56 h-32 md:h-56 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow" style={{ animationDelay: '2s' }} />
+          <div className="absolute bottom-0 md:bottom-5 left-1/2 w-32 md:w-56 h-32 md:h-56 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow" style={{ animationDelay: '4s' }} />
+        </div>
 
-      {/* ─── HERO SECTION ─── */}
-      <section
-        ref={heroRef}
-        className="relative min-h-screen flex items-center justify-center pt-20 pb-16 overflow-hidden"
-      >
-        <motion.div
-          style={{ y: heroY, opacity: heroOpacity }}
-          className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        {/* Floating Product Cards Background - Hidden on mobile */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block">
+          {/* Cards hidden on mobile for performance */}
+        </div>
 
-            {/* LEFT — Hero Content */}
-            <div>
-              {/* Badge */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1, duration: 0.5 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
-                style={{
-                  background: 'rgba(124,58,237,0.15)',
-                  border: '1px solid rgba(168,85,247,0.3)',
-                  backdropFilter: 'blur(10px)',
-                }}
+        {/* Hero Content */}
+        <div className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+          <div className="text-center">
+            {/* Main Heading - Fade Up */}
+            <h1
+              className={`text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 md:mb-6 drop-shadow-2xl transition-all duration-1000 transform ${
+                isHeroVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+              }`}
+            >
+              Preserve Your
+              <br />
+              <span className="bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent animate-text-gradient">
+                Precious Memories
+              </span>
+            </h1>
+
+            {/* Subtitle - Fade Up with Delay */}
+            <p
+              className={`text-base sm:text-lg md:text-xl lg:text-2xl text-white drop-shadow-lg mb-6 md:mb-8 max-w-3xl mx-auto transition-all duration-1000 transform delay-100 px-2 ${
+                isHeroVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+              }`}
+            >
+              Custom photo frames, keychains, and more - designed just for you
+            </p>
+
+            {/* CTA Buttons - Fade Up with More Delay */}
+            <div
+              className={`space-y-3 sm:space-y-0 sm:space-x-3 md:space-x-4 sm:flex sm:justify-center transition-all duration-1000 transform delay-200 px-3 ${
+                isHeroVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+              }`}
+            >
+              {/* Primary Button */}
+              <Link
+                to="/products"
+                className="group block sm:inline-block bg-white text-blue-600 px-6 md:px-8 py-3 md:py-4 rounded-lg font-semibold hover:shadow-2xl hover:shadow-white/50 transition-all duration-300 transform hover:scale-105 cursor-pointer relative overflow-hidden text-sm md:text-base"
               >
-                <Sparkles className="w-3.5 h-3.5" style={{ color: '#A855F7' }} />
-                <span className="text-xs font-semibold tracking-wider uppercase" style={{ color: '#A855F7' }}>
-                  Premium Personalized Gifts
-                </span>
-              </motion.div>
-
-              {/* Heading */}
-              <h1
-                className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] mb-6"
-                style={{ fontFamily: 'Outfit, sans-serif' }}
-              >
-                <AnimatedHeading text="Preserve Your" />
-                <br />
-                <AnimatedHeading text="Precious Memories" gradient />
-              </h1>
-
-              {/* Subtitle */}
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9, duration: 0.7 }}
-                className="text-lg leading-relaxed mb-10 max-w-lg"
-                style={{ color: 'rgba(255,255,255,0.6)', fontFamily: 'Inter, sans-serif' }}
-              >
-                Create timeless memories with our premium collection of personalized photo frames, 
-                acrylic displays, and custom keychains. Every piece tells your story.
-              </motion.p>
-
-              {/* CTA Buttons */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.1, duration: 0.7 }}
-                className="flex flex-col sm:flex-row gap-4 mb-12"
-              >
-                {/* Primary CTA */}
-                <Link to="/products">
-                  <motion.div
-                    whileHover={{ scale: 1.04, y: -2 }}
-                    whileTap={{ scale: 0.97 }}
-                    className="relative inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-white overflow-hidden cursor-pointer"
-                    style={{
-                      background: 'linear-gradient(135deg, #7C3AED, #A855F7, #EC4899)',
-                      backgroundSize: '200% 200%',
-                      boxShadow: '0 0 30px rgba(124,58,237,0.5), 0 4px 20px rgba(236,72,153,0.3)',
-                      fontFamily: 'Outfit, sans-serif',
-                    }}
-                  >
-                    <span>Shop Now</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </motion.div>
-                </Link>
-
-                {/* Secondary CTA */}
-                <Link to="/products">
-                  <motion.div
-                    whileHover={{ scale: 1.04, y: -2 }}
-                    whileTap={{ scale: 0.97 }}
-                    className="relative inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-white cursor-pointer transition-all duration-300"
-                    style={{
-                      background: 'rgba(255,255,255,0.06)',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      backdropFilter: 'blur(16px)',
-                      fontFamily: 'Outfit, sans-serif',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(124,58,237,0.15)';
-                      e.currentTarget.style.borderColor = 'rgba(168,85,247,0.4)';
-                      e.currentTarget.style.boxShadow = '0 0 20px rgba(124,58,237,0.2)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
-                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  >
-                    <span>Customize Frame</span>
-                    <Sparkles className="w-4 h-4" style={{ color: '#A855F7' }} />
-                  </motion.div>
-                </Link>
-              </motion.div>
-
-              {/* Trust Signals */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.4, duration: 0.7 }}
-                className="flex items-center gap-4"
-              >
-                <div className="flex -space-x-2">
-                  {[0, 1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold"
-                      style={{
-                        background: `linear-gradient(135deg, ${['#7C3AED','#A855F7','#EC4899','#6D28D9'][i]}, ${['#A855F7','#EC4899','#6D28D9','#7C3AED'][i]})`,
-                        borderColor: '#0F172A',
-                      }}
-                    >
-                      {['A','R','S','M'][i]}
-                    </div>
-                  ))}
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-pink-300 opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+                <div className="relative flex items-center justify-center">
+                  Shop Now
+                  <ChevronRight className="w-4 md:w-5 h-4 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </div>
-                <div>
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                    ))}
-                    <span className="text-xs ml-1" style={{ color: 'rgba(255,255,255,0.6)' }}>5.0</span>
-                  </div>
-                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                    Loved by <strong className="text-white">300+</strong> happy customers
-                  </p>
+              </Link>
+
+              {/* Secondary Button */}
+              <Link
+                to="/products"
+                className="group block sm:inline-block border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105 relative overflow-hidden text-sm md:text-base"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-white to-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 rounded-md" />
+                <div className="relative flex items-center justify-center">
+                  Customize Frame
+                  <ChevronRight className="w-4 md:w-5 h-4 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </div>
-              </motion.div>
+              </Link>
             </div>
 
-            {/* RIGHT — Floating Product Mockups */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 1 }}
-              className="relative h-[520px] hidden lg:block"
-            >
-              {/* Main Frame Mockup */}
-              <FloatingMockup
-                delay={0}
-                style={{ top: '5%', left: '15%', width: 200, height: 240, padding: '12px' }}
-                animProps={{ y: [0, -25, 0], rotate: ['-3deg', '3deg', '-3deg'] }}
-              >
-                <div
-                  className="w-full h-full rounded-xl"
-                  style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.6), rgba(236,72,153,0.6))' }}
-                />
-                <div className="absolute bottom-3 left-3 right-3">
-                  <div className="h-1.5 rounded-full mb-1" style={{ background: 'rgba(255,255,255,0.3)' }} />
-                  <div className="h-1 rounded-full w-2/3" style={{ background: 'rgba(255,255,255,0.2)' }} />
-                </div>
-              </FloatingMockup>
-
-              {/* Acrylic Frame Mockup */}
-              <FloatingMockup
-                delay={0.3}
-                style={{ top: '25%', right: '5%', width: 160, height: 200, padding: '10px' }}
-                animProps={{ y: [0, 20, 0], rotate: ['5deg', '-2deg', '5deg'] }}
-              >
-                <div
-                  className="w-full h-full rounded-lg"
-                  style={{ background: 'linear-gradient(135deg, rgba(168,85,247,0.5), rgba(99,102,241,0.5))', opacity: 0.8 }}
-                />
-              </FloatingMockup>
-
-              {/* Keychain Mockup */}
-              <FloatingMockup
-                delay={0.6}
-                style={{ bottom: '10%', left: '30%', width: 100, height: 100, borderRadius: '50%', padding: '8px' }}
-                animProps={{ y: [0, -15, 0], rotate: ['0deg', '360deg', '720deg'] }}
-              >
-                <div
-                  className="w-full h-full rounded-full"
-                  style={{ background: 'linear-gradient(135deg, #EC4899, #7C3AED)' }}
-                />
-              </FloatingMockup>
-
-              {/* Small badge mockup */}
-              <FloatingMockup
-                delay={0.9}
-                style={{ top: '50%', left: '5%', width: 120, height: 50, padding: '10px 14px' }}
-                animProps={{ y: [0, 10, 0] }}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full" style={{ background: 'linear-gradient(135deg, #7C3AED, #EC4899)' }} />
-                  <div>
-                    <div className="h-1.5 w-16 rounded-full mb-1" style={{ background: 'rgba(255,255,255,0.4)' }} />
-                    <div className="h-1 w-10 rounded-full" style={{ background: 'rgba(255,255,255,0.2)' }} />
-                  </div>
-                </div>
-              </FloatingMockup>
-
-              {/* Glow orbs */}
-              <div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full pointer-events-none"
-                style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%)', filter: 'blur(40px)' }}
-              />
-            </motion.div>
+            {/* Scroll Indicator - Moved Below */}
+            <div className="absolute bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+              <div className="flex flex-col items-center space-y-2">
+                <svg
+                  className="w-5 md:w-6 h-5 md:h-6 text-white opacity-75"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+              </div>
+            </div>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Scroll Indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <span className="text-xs tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            Scroll
-          </span>
-          <div
-            className="w-6 h-10 rounded-full flex items-start justify-center p-2"
-            style={{ border: '1px solid rgba(255,255,255,0.15)' }}
-          >
-            <motion.div
-              className="w-1 h-2 rounded-full"
-              style={{ background: 'linear-gradient(to bottom, #A855F7, #EC4899)' }}
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </div>
-        </motion.div>
+        {/* Animated Styles */}
+        <style jsx>{`
+          @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+          }
+
+          @keyframes float-slow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(30px); }
+          }
+
+          @keyframes text-gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+          }
+
+          .animate-gradient-shift {
+            background-size: 400% 400%;
+            animation: gradient-shift 15s ease infinite;
+          }
+
+          .animate-float-slow {
+            animation: float-slow 6s ease-in-out infinite;
+          }
+
+          .animate-text-gradient {
+            background-size: 300% 300%;
+            animation: text-gradient 6s ease infinite;
+          }
+        `}</style>
       </section>
 
-      {/* ─── FEATURED PRODUCTS ─── */}
-      <section className="relative z-10 py-24 lg:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+
+      {/* Featured Products */}
+      <section className="py-12 md:py-16 lg:py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-6 lg:px-8">
           <ScrollReveal direction="up">
-            <div className="text-center mb-16">
-              <motion.div
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-4"
-                style={{
-                  background: 'rgba(236,72,153,0.1)',
-                  border: '1px solid rgba(236,72,153,0.2)',
-                }}
-              >
-                <Heart className="w-3 h-3" style={{ color: '#EC4899' }} />
-                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#EC4899' }}>
-                  Most Loved
-                </span>
-              </motion.div>
-              <h2
-                className="text-4xl sm:text-5xl font-black mb-4"
-                style={{ fontFamily: 'Outfit, sans-serif' }}
-              >
-                Featured{' '}
-                <span style={{
-                  background: 'linear-gradient(135deg, #A855F7, #EC4899)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}>
-                  Collection
-                </span>
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
+                Featured Products
               </h2>
-              <p className="text-lg max-w-2xl mx-auto" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                Discover our most loved pieces, crafted for those who value quality and personalization
+              <p className="text-base md:text-lg text-gray-600 px-2">
+                Discover our most popular photo frames and accessories
               </p>
             </div>
           </ScrollReveal>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
             {featuredProducts.map((product, index) => (
               <ScrollReveal key={product.id} direction="up" delay={index * 0.1}>
                 <ProductCard product={product} />
@@ -450,223 +168,168 @@ const Home = () => {
             ))}
           </div>
 
-          <ScrollReveal direction="up" delay={0.5}>
-            <div className="text-center mt-12">
-              <Link to="/products">
-                <motion.div
-                  whileHover={{ scale: 1.04, y: -2 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-white cursor-pointer"
-                  style={{
-                    background: 'rgba(124,58,237,0.15)',
-                    border: '1px solid rgba(168,85,247,0.3)',
-                    backdropFilter: 'blur(10px)',
-                    fontFamily: 'Outfit, sans-serif',
-                    transition: 'all 0.3s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'linear-gradient(135deg, #7C3AED, #EC4899)';
-                    e.currentTarget.style.boxShadow = '0 0 30px rgba(124,58,237,0.4)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(124,58,237,0.15)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  View All Products
-                  <ChevronRight className="w-4 h-4" />
-                </motion.div>
+          <ScrollReveal direction="up" delay={0.4}>
+            <div className="text-center mt-8 md:mt-12">
+              <Link
+                to="/products"
+                className="inline-block bg-primary text-white px-6 md:px-8 py-2.5 md:py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors text-sm md:text-base"
+              >
+                View All Products
               </Link>
             </div>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* ─── STATS SECTION ─── */}
-      <section className="relative z-10 py-24">
-        {/* Divider glow */}
-        <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(to right, transparent, rgba(124,58,237,0.5), rgba(236,72,153,0.5), transparent)' }} />
-        <div className="absolute inset-x-0 bottom-0 h-px" style={{ background: 'linear-gradient(to right, transparent, rgba(124,58,237,0.5), rgba(236,72,153,0.5), transparent)' }} />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {stats.map(({ icon: Icon, value, suffix, label, desc, color }, i) => (
-              <ScrollReveal key={label} direction="up" delay={i * 0.1}>
-                <motion.div
-                  whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                  className="relative p-8 rounded-3xl text-center group"
-                  style={{
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    backdropFilter: 'blur(10px)',
-                    transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = `${color}40`;
-                    e.currentTarget.style.boxShadow = `0 20px 60px ${color}20`;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  {/* Icon */}
-                  <div
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
-                    style={{ background: `${color}20`, border: `1px solid ${color}30` }}
-                  >
-                    <Icon className="w-8 h-8" style={{ color }} />
-                  </div>
-                  {/* Counter */}
-                  <div className="text-4xl font-black mb-2" style={{ fontFamily: 'Outfit, sans-serif', color }}>
-                    <AnimatedCounter end={value} duration={2} suffix={suffix} />
-                  </div>
-                  <p className="font-semibold text-white mb-1">{label}</p>
-                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>{desc}</p>
-                </motion.div>
-              </ScrollReveal>
-            ))}
-          </div>
+      {/* Stats Section with Animated Counters */}
+      <section className="py-16 md:py-20 lg:py-24 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 opacity-10 md:opacity-20">
+          <div className="absolute top-10 md:top-20 left-5 md:left-10 w-40 md:w-72 h-40 md:h-72 bg-white rounded-full mix-blend-multiply filter blur-3xl animate-float-slow" />
+          <div className="absolute bottom-10 md:bottom-20 right-5 md:right-10 w-40 md:w-72 h-40 md:h-72 bg-white rounded-full mix-blend-multiply filter blur-3xl animate-float-slow" style={{ animationDelay: '2s' }} />
         </div>
-      </section>
 
-      {/* ─── HOW IT WORKS ─── */}
-      <section className="relative z-10 py-24 lg:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* Section Header */}
           <ScrollReveal direction="up">
-            <div className="text-center mb-16">
-              <h2
-                className="text-4xl sm:text-5xl font-black mb-4"
-                style={{ fontFamily: 'Outfit, sans-serif' }}
-              >
-                How It{' '}
-                <span style={{
-                  background: 'linear-gradient(135deg, #7C3AED, #A855F7)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}>
-                  Works
-                </span>
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">
+                Our Impact
               </h2>
-              <p className="text-lg" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                Three simple steps to your perfect memory
+              <p className="text-base md:text-lg text-white/90 max-w-2xl mx-auto px-2">
+                Trusted by thousands of customers to preserve their precious memories
               </p>
             </div>
           </ScrollReveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-            {/* Connector line */}
-            <div
-              className="absolute top-12 left-1/6 right-1/6 h-px hidden md:block"
-              style={{ background: 'linear-gradient(to right, transparent, rgba(124,58,237,0.4), rgba(236,72,153,0.4), transparent)' }}
-            />
-
-            {steps.map((step, i) => (
-              <ScrollReveal key={i} direction="up" delay={i * 0.12}>
-                <motion.div
-                  whileHover={{ y: -6 }}
-                  className="relative p-8 rounded-3xl text-center group"
-                  style={{
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.07)',
-                    backdropFilter: 'blur(10px)',
-                    transition: 'all 0.3s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(124,58,237,0.08)';
-                    e.currentTarget.style.borderColor = 'rgba(124,58,237,0.25)';
-                    e.currentTarget.style.boxShadow = '0 20px 60px rgba(124,58,237,0.12)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  <div className="text-3xl mb-4">{step.icon}</div>
-                  <div
-                    className="text-5xl font-black mb-4"
-                    style={{
-                      fontFamily: 'Outfit, sans-serif',
-                      background: 'linear-gradient(135deg, #7C3AED, #EC4899)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                    }}
-                  >
-                    {step.num}
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 lg:gap-12">
+            {/* Happy Customers */}
+            <ScrollReveal direction="up" delay={0.1}>
+              <div className="text-center p-6 md:p-8 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+                <div className="flex justify-center mb-4">
+                  <div className="bg-white/20 rounded-full p-3 md:p-4">
+                    <Users className="w-6 md:w-8 h-6 md:h-8 text-yellow-300" />
                   </div>
-                  <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Outfit, sans-serif' }}>
-                    {step.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                    {step.desc}
-                  </p>
-                </motion.div>
-              </ScrollReveal>
-            ))}
+                </div>
+                <div className="mb-2">
+                  <AnimatedCounter end={5000} duration={2} prefix="" suffix="+" />
+                </div>
+                <p className="text-base md:text-lg text-white/90">Happy Customers</p>
+                <p className="text-xs md:text-sm text-white/70 mt-2">
+                  Trusted worldwide for quality and service
+                </p>
+              </div>
+            </ScrollReveal>
+
+            {/* Orders Delivered */}
+            <ScrollReveal direction="up" delay={0.2}>
+              <div className="text-center p-6 md:p-8 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+                <div className="flex justify-center mb-4">
+                  <div className="bg-white/20 rounded-full p-3 md:p-4">
+                    <Zap className="w-6 md:w-8 h-6 md:h-8 text-pink-300" />
+                  </div>
+                </div>
+                <div className="mb-2">
+                  <AnimatedCounter end={12500} duration={2} prefix="" suffix="+" />
+                </div>
+                <p className="text-base md:text-lg text-white/90">Orders Delivered</p>
+                <p className="text-xs md:text-sm text-white/70 mt-2">
+                  Fast and reliable delivery service
+                </p>
+              </div>
+            </ScrollReveal>
+
+            {/* Product Quality */}
+            <ScrollReveal direction="up" delay={0.3}>
+              <div className="text-center p-6 md:p-8 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+                <div className="flex justify-center mb-4">
+                  <div className="bg-white/20 rounded-full p-3 md:p-4">
+                    <Award className="w-6 md:w-8 h-6 md:h-8 text-blue-300" />
+                  </div>
+                </div>
+                <div className="mb-2">
+                  <AnimatedCounter end={99} duration={2} prefix="" suffix="%" />
+                </div>
+                <p className="text-base md:text-lg text-white/90">Quality Guaranteed</p>
+                <p className="text-xs md:text-sm text-white/70 mt-2">
+                  Premium products with satisfaction promise
+                </p>
+              </div>
+            </ScrollReveal>
           </div>
         </div>
+
+        {/* Animated Styles */}
+        <style jsx>{`
+          @keyframes float-slow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(30px); }
+          }
+
+          .animate-float-slow {
+            animation: float-slow 6s ease-in-out infinite;
+          }
+        `}</style>
       </section>
 
-      {/* ─── CTA BANNER ─── */}
-      <section className="relative z-10 py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* How It Works */}
+      <section className="py-12 md:py-16 lg:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-6 lg:px-8">
           <ScrollReveal direction="up">
-            <motion.div
-              className="relative p-12 rounded-3xl overflow-hidden"
-              style={{
-                background: 'rgba(124,58,237,0.08)',
-                border: '1px solid rgba(124,58,237,0.2)',
-                backdropFilter: 'blur(20px)',
-              }}
-            >
-              {/* Glow orb inside */}
-              <div
-                className="absolute -top-20 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full pointer-events-none"
-                style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.3) 0%, transparent 70%)', filter: 'blur(40px)' }}
-              />
-
-              <div className="relative z-10">
-                <div className="text-4xl mb-4">💜</div>
-                <h2
-                  className="text-3xl sm:text-4xl font-black mb-4"
-                  style={{ fontFamily: 'Outfit, sans-serif' }}
-                >
-                  Ready to Create Something{' '}
-                  <span style={{
-                    background: 'linear-gradient(135deg, #A855F7, #EC4899)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                  }}>
-                    Beautiful?
-                  </span>
-                </h2>
-                <p className="text-lg mb-8 max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                  Turn your favorite photos into stunning personalized gifts. 
-                  Start designing today.
-                </p>
-                <Link to="/products">
-                  <motion.div
-                    whileHover={{ scale: 1.05, y: -3 }}
-                    whileTap={{ scale: 0.97 }}
-                    className="inline-flex items-center gap-2 px-10 py-4 rounded-full font-bold text-white cursor-pointer"
-                    style={{
-                      background: 'linear-gradient(135deg, #7C3AED, #A855F7, #EC4899)',
-                      boxShadow: '0 0 40px rgba(124,58,237,0.5)',
-                      fontFamily: 'Outfit, sans-serif',
-                      fontSize: '1.05rem',
-                    }}
-                  >
-                    <Sparkles className="w-5 h-5" />
-                    Start Customizing
-                  </motion.div>
-                </Link>
-              </div>
-            </motion.div>
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
+                How It Works
+              </h2>
+              <p className="text-base md:text-lg text-gray-600">
+                Simple steps to create your perfect photo frame
+              </p>
+            </div>
           </ScrollReveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            <ScrollReveal direction="up" delay={0.1}>
+              <div className="text-center">
+                <div className="bg-blue-100 w-14 md:w-16 h-14 md:h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-xl md:text-2xl font-bold text-blue-600">1</span>
+                </div>
+                <h3 className="text-base md:text-xl font-semibold text-gray-900 mb-2">
+                  Choose Your Product
+                </h3>
+                <p className="text-sm md:text-base text-gray-600">
+                  Select from our range of frames, keychains, and accessories
+                </p>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal direction="up" delay={0.2}>
+              <div className="text-center">
+                <div className="bg-blue-100 w-14 md:w-16 h-14 md:h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-xl md:text-2xl font-bold text-blue-600">2</span>
+                </div>
+                <h3 className="text-base md:text-xl font-semibold text-gray-900 mb-2">
+                  Upload & Customize
+                </h3>
+                <p className="text-sm md:text-base text-gray-600">
+                  Upload your photo and adjust size, position, and other details
+                </p>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal direction="up" delay={0.3}>
+              <div className="text-center">
+                <div className="bg-blue-100 w-14 md:w-16 h-14 md:h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-xl md:text-2xl font-bold text-blue-600">3</span>
+                </div>
+                <h3 className="text-base md:text-xl font-semibold text-gray-900 mb-2">
+                  Order via WhatsApp
+                </h3>
+                <p className="text-sm md:text-base text-gray-600">
+                  Complete your order through WhatsApp with all details included
+                </p>
+              </div>
+            </ScrollReveal>
+          </div>
         </div>
       </section>
     </div>

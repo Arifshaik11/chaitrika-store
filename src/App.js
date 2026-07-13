@@ -8,8 +8,8 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import ScrollProgressBar from './components/ScrollProgressBar';
 import ElegantLogoIntro from './components/ElegantLogoIntro';
-import HomeAurora from './pages/Home';
-import ProductsAurora from './pages/Products';
+import Home from './pages/Home';
+import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import AdminLogin from './pages/AdminLogin';
@@ -74,8 +74,8 @@ function App() {
             <Header />
             <main className="flex-1">
               <Routes>
-                <Route path="/" element={<HomeAurora />} />
-                <Route path="/products" element={<ProductsAurora />} />
+                <Route path="/" element={<Home />} />
+                <Route path="/products" element={<Products />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
