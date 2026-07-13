@@ -8,8 +8,8 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import ScrollProgressBar from './components/ScrollProgressBar';
 import ElegantLogoIntro from './components/ElegantLogoIntro';
-import Home from './pages/Home';
-import Products from './pages/Products';
+import HomeAurora from './pages/HomeAurora';
+import ProductsAurora from './pages/ProductsAurora';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import AdminLogin from './pages/AdminLogin';
@@ -70,12 +70,12 @@ function App() {
             <ElegantLogoIntro onComplete={handleIntroComplete} />
           )}
           
-          <div className="min-h-screen flex flex-col bg-gray-50">
+          <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-950 via-purple-950 to-slate-950">
             <Header />
             <main className="flex-1">
               <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/products" element={<Products />} />
+                <Route path="/" element={<HomeAurora />} />
+                <Route path="/products" element={<ProductsAurora />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
