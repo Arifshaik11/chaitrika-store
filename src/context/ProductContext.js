@@ -170,7 +170,7 @@ export const ProductProvider = ({ children }) => {
         id: Date.now().toString(),
         name: productData.name,
         category: productData.category,
-        basePrice: productData.basePrice || 0,
+        "basePrice": productData.basePrice || 0,
         description: productData.description,
         image: productData.image,
         sizes: productData.sizes || [],
@@ -207,7 +207,7 @@ export const ProductProvider = ({ children }) => {
       const cleanData = {
         name: productData.name,
         category: productData.category,
-        basePrice: productData.basePrice || 0,
+        "basePrice": productData.basePrice || 0,
         description: productData.description,
         image: productData.image,
         sizes: productData.sizes || [],

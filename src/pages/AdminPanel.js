@@ -264,7 +264,7 @@ const AdminPanel = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                   placeholder="Enter product name"
                 />
               </div>
@@ -278,7 +278,7 @@ const AdminPanel = () => {
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                   >
                     {categories.map((cat) => (
                       <option key={cat} value={cat}>
@@ -303,7 +303,7 @@ const AdminPanel = () => {
                       value={newCategory}
                       onChange={(e) => setNewCategory(e.target.value)}
                       placeholder="Enter new category name"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                     />
                     <button
                       type="button"
@@ -374,7 +374,7 @@ const AdminPanel = () => {
                   onChange={handleInputChange}
                   required
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                   placeholder="Enter product description"
                 />
               </div>
@@ -390,14 +390,14 @@ const AdminPanel = () => {
                       value={size.size}
                       onChange={(e) => handleSizeChange(index, 'size', e.target.value)}
                       placeholder="Size (e.g., 4x6)"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                     />
                     <input
                       type="number"
                       value={size.price}
                       onChange={(e) => handleSizeChange(index, 'price', e.target.value)}
                       placeholder="Price"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                     />
                     {formData.sizes.length > 1 && (
                       <button
@@ -431,14 +431,14 @@ const AdminPanel = () => {
                       value={shape.shape}
                       onChange={(e) => handleShapeChange(index, 'shape', e.target.value)}
                       placeholder="Shape (e.g., Square, Round, Heart)"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                     />
                     <input
                       type="number"
                       value={shape.price}
                       onChange={(e) => handleShapeChange(index, 'price', e.target.value)}
                       placeholder="Price (0 for base)"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
                     />
                     {formData.shapes.length > 1 && (
                       <button
