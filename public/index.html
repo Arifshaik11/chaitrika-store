@@ -3,93 +3,75 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/apple-touch-icon.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0F172A" />
-    <meta name="description" content="Chaitra Wrap & Wear — Premium personalized photo frames, acrylic frames, MDF frames, magnetic frames & custom keychains. Preserve your precious memories in style." />
-    <meta name="keywords" content="personalized photo frames, custom keychains, acrylic frames, MDF frames, magnetic photo frames, custom gifts, memory gifts" />
-    <meta property="og:title" content="Chaitra Wrap & Wear — Preserve Your Precious Memories" />
-    <meta property="og:description" content="Premium personalized gifts crafted with love. Custom photo frames, acrylic displays & keychains." />
+    <meta name="description" content="Chaitra Wrap &amp; Wear — Premium personalized photo frames, acrylic frames, MDF frames, magnetic frames &amp; custom keychains. Preserve your precious memories in style." />
+    <meta name="keywords" content="personalized photo frames, custom keychains, acrylic frames, MDF frames, magnetic photo frames, custom gifts, memory gifts, Hyderabad" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="English" />
+    <meta name="revisit-after" content="7 days" />
+    <meta name="author" content="Chaitra Wrap &amp; Wear" />
+    <meta property="og:title" content="Chaitra Wrap &amp; Wear — Preserve Your Precious Memories" />
+    <meta property="og:description" content="Premium personalized gifts crafted with love. Custom photo frames, acrylic displays &amp; keychains." />
+    <meta property="og:image" content="https://chaitrika.in/og-image.jpg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://chaitrika.in" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Chaitra Wrap &amp; Wear — Preserve Your Precious Memories" />
+    <meta name="twitter:description" content="Premium personalized gifts crafted with love." />
+    <link rel="canonical" href="https://chaitrika.in" />
     <title>Chaitra Wrap &amp; Wear — Preserve Your Precious Memories</title>
+
+    <!-- Google Fonts: Playfair Display + Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              primary: '#7C3AED',
-              secondary: '#A855F7',
-              accent: '#EC4899',
-              aurora: {
-                purple: '#7C3AED',
-                violet: '#A855F7',
-                pink: '#EC4899',
-                rose: '#F43F5E',
-              },
-              surface: 'rgba(255,255,255,0.08)',
-              dark: {
-                900: '#0F172A',
-                800: '#1E293B',
-                700: '#334155',
-              }
+              primary: '#C9897A',
+              accent: '#C9897A',
+              'accent-light': '#F2E8E5',
+              'ink': '#111111',
+              'ink-soft': '#444444',
+              'ink-muted': '#888888',
+              'surface': '#F8F8F8',
+              'border-soft': '#EBEBEB',
             },
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
-              display: ['Outfit', 'sans-serif'],
+              display: ['"Playfair Display"', 'Georgia', 'serif'],
             },
             borderRadius: {
-              lg: '16px',
-              xl: '20px',
-              '2xl': '24px',
-              '3xl': '32px',
-              '4xl': '40px',
+              DEFAULT: '10px',
+              lg: '12px',
+              xl: '16px',
+              '2xl': '20px',
             },
             boxShadow: {
-              soft: '0 2px 8px rgba(0,0,0,0.08)',
-              'soft-lg': '0 8px 24px rgba(0,0,0,0.12)',
-              glass: '0 8px 32px rgba(124,58,237,0.2)',
-              glow: '0 0 30px rgba(124,58,237,0.4)',
-              'glow-pink': '0 0 30px rgba(236,72,153,0.4)',
-              'glow-lg': '0 0 60px rgba(124,58,237,0.3)',
-            },
-            backdropBlur: {
-              xs: '2px',
-              sm: '4px',
-              md: '12px',
-              lg: '20px',
-              xl: '30px',
+              card: '0 2px 16px rgba(0,0,0,0.06)',
+              'card-hover': '0 8px 32px rgba(0,0,0,0.10)',
+              soft: '0 1px 4px rgba(0,0,0,0.05)',
+              'soft-lg': '0 4px 20px rgba(0,0,0,0.08)',
             },
             animation: {
-              'aurora-shift': 'auroraShift 20s ease infinite',
-              'float': 'float 6s ease-in-out infinite',
-              'float-slow': 'floatSlow 10s ease-in-out infinite',
-              'glow-pulse': 'glowPulse 3s ease-in-out infinite',
-              'particle': 'particle 8s linear infinite',
-              'gradient-x': 'gradientX 15s ease infinite',
-              'spin-slow': 'spin 20s linear infinite',
+              'fade-up': 'fadeUp 0.7s ease forwards',
+              'fade-in': 'fadeIn 0.6s ease forwards',
             },
             keyframes: {
-              auroraShift: {
-                '0%, 100%': { backgroundPosition: '0% 50%' },
-                '50%': { backgroundPosition: '100% 50%' },
+              fadeUp: {
+                '0%': { opacity: '0', transform: 'translateY(24px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
               },
-              float: {
-                '0%, 100%': { transform: 'translateY(0px)' },
-                '50%': { transform: 'translateY(-20px)' },
-              },
-              floatSlow: {
-                '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
-                '50%': { transform: 'translateY(-30px) rotate(5deg)' },
-              },
-              glowPulse: {
-                '0%, 100%': { opacity: '0.6' },
-                '50%': { opacity: '1' },
-              },
-              gradientX: {
-                '0%, 100%': { backgroundSize: '200% 200%', backgroundPosition: 'left center' },
-                '50%': { backgroundSize: '200% 200%', backgroundPosition: 'right center' },
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
               },
             },
           }
@@ -101,83 +83,112 @@
       html { scroll-behavior: smooth; }
       body {
         margin: 0;
-        background: #0F172A;
-        color: white;
+        background: #FFFFFF;
+        color: #111111;
         font-family: 'Inter', sans-serif;
         overflow-x: hidden;
         -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
-      ::-webkit-scrollbar { width: 6px; }
-      ::-webkit-scrollbar-track { background: #0F172A; }
-      ::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #7C3AED, #EC4899); border-radius: 3px; }
-      ::selection { background: rgba(124,58,237,0.3); color: white; }
 
-      @keyframes auroraShift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
-      }
-      @keyframes floatSlow {
-        0%, 100% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-30px) rotate(3deg); }
-      }
-      @keyframes glowPulse {
-        0%, 100% { opacity: 0.6; box-shadow: 0 0 20px rgba(124,58,237,0.3); }
-        50% { opacity: 1; box-shadow: 0 0 40px rgba(124,58,237,0.6); }
-      }
-      @keyframes particle {
-        0% { transform: translateY(100vh) scale(0); opacity: 0; }
-        10% { opacity: 1; }
-        90% { opacity: 0.5; }
-        100% { transform: translateY(-10vh) scale(1); opacity: 0; }
-      }
-      @keyframes gradientX {
-        0%, 100% { background-size: 200% 200%; background-position: left center; }
-        50% { background-size: 200% 200%; background-position: right center; }
-      }
-      .animate-aurora { animation: auroraShift 20s ease infinite; }
-      .animate-float { animation: float 6s ease-in-out infinite; }
-      .animate-float-slow { animation: floatSlow 10s ease-in-out infinite; }
-      .animate-glow-pulse { animation: glowPulse 3s ease-in-out infinite; }
-      .animate-gradient-x { animation: gradientX 15s ease infinite; }
+      /* Scrollbar */
+      ::-webkit-scrollbar { width: 5px; }
+      ::-webkit-scrollbar-track { background: #F8F8F8; }
+      ::-webkit-scrollbar-thumb { background: #C9897A; border-radius: 10px; }
+      ::selection { background: rgba(201,137,122,0.18); color: #111111; }
 
-      .glass {
-        background: rgba(255,255,255,0.05);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255,255,255,0.1);
+      /* Typography utilities */
+      .font-display { font-family: 'Playfair Display', Georgia, serif; }
+
+      /* Animations */
+      @keyframes fadeUp {
+        0%   { opacity: 0; transform: translateY(24px); }
+        100% { opacity: 1; transform: translateY(0); }
       }
-      .glass-card {
-        background: rgba(255,255,255,0.04);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 20px;
+      @keyframes fadeIn {
+        0%   { opacity: 0; }
+        100% { opacity: 1; }
       }
-      .glass-strong {
-        background: rgba(15,23,42,0.7);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border: 1px solid rgba(124,58,237,0.2);
+      @keyframes scaleIn {
+        0%   { opacity: 0; transform: scale(0.97); }
+        100% { opacity: 1; transform: scale(1); }
       }
-      .text-aurora {
-        background: linear-gradient(135deg, #A855F7, #EC4899, #7C3AED);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+
+      .animate-fade-up   { animation: fadeUp  0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+      .animate-fade-in   { animation: fadeIn  0.6s ease both; }
+      .animate-scale-in  { animation: scaleIn 0.5s ease both; }
+
+      /* Delay utilities */
+      .delay-100 { animation-delay: 0.1s; }
+      .delay-200 { animation-delay: 0.2s; }
+      .delay-300 { animation-delay: 0.3s; }
+      .delay-400 { animation-delay: 0.4s; }
+
+      /* Clean divider */
+      .divider {
+        height: 1px;
+        background: #EBEBEB;
       }
-      .aurora-bg {
-        background: linear-gradient(45deg, #7C3AED, #A855F7, #EC4899, #7C3AED);
-        background-size: 300% 300%;
-        animation: auroraShift 8s ease infinite;
+
+      /* Accent underline for links */
+      .link-accent {
+        position: relative;
+        display: inline-block;
       }
-      .glow-purple { box-shadow: 0 0 30px rgba(124,58,237,0.5); }
-      .glow-pink { box-shadow: 0 0 30px rgba(236,72,153,0.5); }
-      .hover-glow:hover { box-shadow: 0 0 40px rgba(124,58,237,0.4); transition: box-shadow 0.3s ease; }
+      .link-accent::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: #C9897A;
+        transition: width 0.3s ease;
+      }
+      .link-accent:hover::after { width: 100%; }
+
+      /* Black luxury button */
+      .btn-primary {
+        display: inline-block;
+        background: #111111;
+        color: #FFFFFF;
+        padding: 14px 32px;
+        border-radius: 10px;
+        font-family: 'Inter', sans-serif;
+        font-size: 15px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        border: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-decoration: none;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+      }
+
+      /* Outline button */
+      .btn-outline {
+        display: inline-block;
+        background: transparent;
+        color: #111111;
+        padding: 13px 32px;
+        border-radius: 10px;
+        font-family: 'Inter', sans-serif;
+        font-size: 15px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        border: 1.5px solid #111111;
+        transition: background 0.3s ease, transform 0.3s ease;
+        text-decoration: none;
+      }
+      .btn-outline:hover {
+        background: #111111;
+        color: #FFFFFF;
+        transform: translateY(-2px);
+      }
     </style>
   </head>
   <body>

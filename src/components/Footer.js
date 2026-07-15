@@ -1,78 +1,100 @@
 import React from 'react';
-import { Camera, Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Phone, Mail, MapPin, Instagram, Facebook, Youtube } from 'lucide-react';
 
 const Footer = () => {
-  const socialLinks = [
-    { icon: Facebook, label: 'Facebook', url: '#' },
-    { icon: Twitter, label: 'Twitter', url: '#' },
-    { icon: Instagram, label: 'Instagram', url: '#' },
-    { icon: Linkedin, label: 'LinkedIn', url: '#' }
-  ];
+  const helpLinks = ['How It Works', 'Order via WhatsApp', 'Shipping Info', 'Returns'];
 
   return (
-    <footer className="bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <Camera className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold">
-                Chaitra <span className="text-primary">Wrap</span>@Wear
+    <footer style={{ background: '#111111', color: '#FFFFFF' }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8">
+
+          {/* Brand */}
+          <div className="md:col-span-6">
+            <div className="flex items-baseline gap-2 mb-3">
+              <span
+                className="font-display text-2xl font-semibold"
+                style={{ color: '#FFFFFF', letterSpacing: '-0.01em' }}
+              >
+                Chaitra
+              </span>
+              <span
+                className="text-xs font-sans tracking-widest uppercase"
+                style={{ color: '#C9897A' }}
+              >
+                Wrap &amp; Wear
               </span>
             </div>
-            <p className="text-gray-300 mb-4">
-              We specialize in creating beautiful, customized photo frames and accessories. 
-              From magnetic frames to acrylic displays, we help you preserve your precious memories in style.
+            <div
+              className="w-8 h-px mb-5"
+              style={{ background: '#C9897A' }}
+            />
+            <p className="text-sm leading-relaxed mb-6" style={{ color: '#AAAAAA' }}>
+              We craft personalized photo frames, acrylic displays, and keepsakes that preserve
+              your most precious memories in timeless style.
             </p>
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <Phone className="h-4 w-4 text-primary" />
-                <span className="text-sm">+91 8499999498</span>
+
+            {/* Contact */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <Phone className="h-4 w-4 flex-shrink-0" style={{ color: '#C9897A' }} />
+                <span className="text-sm" style={{ color: '#CCCCCC' }}>+91 8499999498</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <Mail className="h-4 w-4 text-primary" />
-                <span className="text-sm">info@chaitrawrapwear.com</span>
+              <div className="flex items-center gap-3">
+                <Mail className="h-4 w-4 flex-shrink-0" style={{ color: '#C9897A' }} />
+                <span className="text-sm" style={{ color: '#CCCCCC' }}>hello@chaitrika.in</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-primary" />
-                <span className="text-sm">Hyderabad, Madhapur</span>
+              <div className="flex items-center gap-3">
+                <MapPin className="h-4 w-4 flex-shrink-0" style={{ color: '#C9897A' }} />
+                <span className="text-sm" style={{ color: '#CCCCCC' }}>Hyderabad, Madhapur</span>
               </div>
             </div>
 
-            {/* Social Icons */}
-            <div className="flex space-x-4 mt-6">
-              {socialLinks.map((social) => {
-                const Icon = social.icon;
-                return (
-                  <a
-                    key={social.label}
-                    href={social.url}
-                    className="group relative w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center transition-all duration-300 hover:shadow-lg hover:shadow-primary/50"
-                  >
-                    <Icon className="h-5 w-5 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" />
-                    
-                    {/* Lift effect on hover */}
-                    <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-110">
-                      <div className="w-full h-full bg-gradient-to-br from-primary to-secondary rounded-full blur-lg" />
-                    </div>
-                  </a>
-                );
-              })}
+            {/* Social */}
+            <div className="flex gap-3 mt-6">
+              {[
+                { icon: Instagram, label: 'Instagram' },
+                { icon: Facebook, label: 'Facebook' },
+                { icon: Youtube, label: 'YouTube' },
+              ].map(({ icon: Icon, label }) => (
+                <a
+                  key={label}
+                  href="#"
+                  aria-label={label}
+                  className="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5"
+                  style={{ border: '1px solid #333333', color: '#AAAAAA' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#C9897A';
+                    e.currentTarget.style.color = '#C9897A';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#333333';
+                    e.currentTarget.style.color = '#AAAAAA';
+                  }}
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* Products */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Products</h3>
+          {/* Help */}
+          <div className="md:col-span-4 md:col-start-9">
+            <h3 className="text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: '#777777' }}>
+              Help
+            </h3>
             <ul className="space-y-3">
-              {['Magnetic Frames', 'Custom Keychains', 'Acrylic Frames', 'MDF Frames', 'Custom Sizes'].map((item) => (
+              {helpLinks.map((item) => (
                 <li key={item}>
-                  <a href="#" className="group text-gray-300 hover:text-primary transition-colors duration-300 relative inline-block">
-                    <span className="relative">
-                      {item}
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-500" />
-                    </span>
+                  <a
+                    href="#"
+                    className="text-sm link-accent transition-colors duration-200"
+                    style={{ color: '#AAAAAA', textDecoration: 'none' }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = '#FFFFFF'}
+                    onMouseLeave={(e) => e.currentTarget.style.color = '#AAAAAA'}
+                  >
+                    {item}
                   </a>
                 </li>
               ))}
@@ -80,21 +102,15 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8">
-          <div className="text-center text-gray-300">
-            <p>&copy; 2024 Chaitra Wrap@Wear. All rights reserved.</p>
-            <p className="text-sm text-gray-500 mt-2">Crafted with ❤️ for your precious memories</p>
-          </div>
+        {/* Bottom bar */}
+        <div
+          className="mt-12 pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs"
+          style={{ borderTop: '1px solid #222222', color: '#666666' }}
+        >
+          <p>© {new Date().getFullYear()} Chaitra Wrap &amp; Wear. All rights reserved.</p>
+          <p>Crafted with care in Hyderabad 🤍</p>
         </div>
       </div>
-
-      {/* Styles */}
-      <style jsx>{`
-        @keyframes float-icon {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-4px); }
-        }
-      `}</style>
     </footer>
   );
 };

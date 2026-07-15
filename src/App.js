@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Lenis from 'lenis';
 import { CartProvider } from './context/CartContext';
@@ -8,13 +8,25 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import ScrollProgressBar from './components/ScrollProgressBar';
 import ElegantLogoIntro from './components/ElegantLogoIntro';
-import Home from './pages/Home';
-import Products from './pages/Products';
-import ProductDetail from './pages/ProductDetail';
-import Cart from './pages/Cart';
-import AdminLogin from './pages/AdminLogin';
-import AdminPanel from './pages/AdminPanel';
-import Checkout from './pages/Checkout';
+
+// Lazy load pages for code splitting
+const Home = lazy(() => import('./pages/Home'));
+const Products = lazy(() => import('./pages/Products'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const Cart = lazy(() => import('./pages/Cart'));
+const AdminLogin = lazy(() => import('./pages/AdminLogin'));
+const AdminPanel = lazy(() => import('./pages/AdminPanel'));
+const Checkout = lazy(() => import('./pages/Checkout'));
+
+// Fallback loading component
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="text-center">
+      <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <p className="mt-4 text-gray-600">Loading...</p>
+    </div>
+  </div>
+);
 
 function App() {
   const [showIntro, setShowIntro] = useState(false);
@@ -73,15 +85,17 @@ function App() {
           <div className="min-h-screen flex flex-col bg-gray-50">
             <Header />
             <main className="flex-1">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/products" element={<Products />} />
-                <Route path="/product/:id" element={<ProductDetail />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/admin" element={<AdminLogin />} />
-                <Route path="/admin/panel" element={<AdminPanel />} />
-              </Routes>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/products" element={<Products />} />
+                  <Route path="/product/:id" element={<ProductDetail />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/admin" element={<AdminLogin />} />
+                  <Route path="/admin/panel" element={<AdminPanel />} />
+                </Routes>
+              </Suspense>
             </main>
             <Footer />
           </div>

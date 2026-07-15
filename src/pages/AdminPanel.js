@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useProducts } from '../context/ProductContext';
+import SEO from '../components/SEO';
 import { 
-  Plus,
-  Edit, 
-  Save, 
-  X, 
-  Package,
-  Minus,
-  Trash2,
-  Upload
+   Plus,
+   Edit, 
+   Save, 
+   X, 
+   Package,
+   Minus,
+   Trash2,
+   Upload
 } from 'lucide-react';
 
 const AdminPanel = () => {
@@ -225,37 +226,43 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white min-h-screen text-gray-900">
+      <SEO
+        title="Admin Panel | Chaitra Wrap & Wear"
+        description="Admin panel"
+        robots="noindex, nofollow"
+        canonical="https://chaitrika.in/admin/panel"
+      />
+      <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-100">
+        <h1 className="font-display text-3xl font-semibold text-gray-900">Admin Panel</h1>
         <button
           onClick={() => setShowAddForm(true)}
-          className="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors flex items-center space-x-2"
+          className="bg-ink text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition-all text-xs font-semibold uppercase tracking-wider flex items-center space-x-1.5"
         >
-          <Plus className="h-5 w-5" />
+          <Plus className="h-4 w-4" />
           <span>Add Product</span>
         </button>
       </div>
 
       {/* Add/Edit Product Form */}
       {showAddForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto border border-gray-100 shadow-xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="font-display text-xl font-semibold text-gray-900">
                 {editingProduct ? 'Edit Product' : 'Add New Product'}
               </h2>
               <button
                 onClick={resetForm}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-400 hover:text-gray-700"
               >
-                <X className="h-6 w-6" />
+                <X className="h-5 w-5" />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
                   Product Name *
                 </label>
                 <input
@@ -264,13 +271,13 @@ const AdminPanel = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C9897A] text-sm text-gray-900 transition-colors"
                   placeholder="Enter product name"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
                   Category *
                 </label>
                 <div className="flex space-x-2">
@@ -278,7 +285,7 @@ const AdminPanel = () => {
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C9897A] text-sm text-gray-900 transition-colors bg-white"
                   >
                     {categories.map((cat) => (
                       <option key={cat} value={cat}>
@@ -289,10 +296,10 @@ const AdminPanel = () => {
                   <button
                     type="button"
                     onClick={() => setShowNewCategoryInput(!showNewCategoryInput)}
-                    className="px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center space-x-1"
+                    className="px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-xs font-medium text-gray-650 transition-colors flex items-center space-x-1"
                   >
-                    <Plus className="h-4 w-4" />
-                    <span className="text-sm">Add Category</span>
+                    <Plus className="h-3.5 w-3.5" />
+                    <span>Add Category</span>
                   </button>
                 </div>
                 
@@ -303,12 +310,12 @@ const AdminPanel = () => {
                       value={newCategory}
                       onChange={(e) => setNewCategory(e.target.value)}
                       placeholder="Enter new category name"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C9897A] text-sm text-gray-900 transition-colors"
                     />
                     <button
                       type="button"
                       onClick={handleAddCategory}
-                      className="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                      className="px-3 py-2 bg-ink text-white rounded-lg text-xs font-semibold"
                     >
                       Add
                     </button>
@@ -318,7 +325,7 @@ const AdminPanel = () => {
                         setShowNewCategoryInput(false);
                         setNewCategory('');
                       }}
-                      className="px-3 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+                      className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium"
                     >
                       Cancel
                     </button>
@@ -327,7 +334,7 @@ const AdminPanel = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
                   Product Image *
                 </label>
                 <div className="relative">
@@ -340,7 +347,7 @@ const AdminPanel = () => {
                   />
                   <label
                     htmlFor="image-upload"
-                    className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors"
+                    className="flex items-center justify-center w-full px-4 py-4 border border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-[#C9897A] transition-colors bg-[#F8F8F8]"
                   >
                     <div className="text-center">
                       {formData.image ? (
@@ -348,15 +355,15 @@ const AdminPanel = () => {
                           <img
                             src={formData.image}
                             alt="Preview"
-                            className="w-32 h-32 object-cover rounded-lg mx-auto mb-2"
+                            className="w-24 h-24 object-cover rounded-lg mx-auto mb-2"
                           />
-                          <p className="text-sm text-primary font-medium">Click to change image</p>
+                          <p className="text-xs text-[#C9897A] font-semibold uppercase tracking-wider">Change image</p>
                         </div>
                       ) : (
                         <div>
-                          <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                          <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
-                          <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                          <Upload className="w-6 h-6 text-gray-400 mx-auto mb-2" />
+                          <p className="text-xs text-gray-600 font-medium">Click to upload image</p>
+                          <p className="text-[10px] text-gray-400 mt-0.5">PNG, JPG, GIF</p>
                         </div>
                       )}
                     </div>
@@ -365,7 +372,7 @@ const AdminPanel = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
                   Description *
                 </label>
                 <textarea
@@ -374,13 +381,13 @@ const AdminPanel = () => {
                   onChange={handleInputChange}
                   required
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C9897A] text-sm text-gray-900 transition-colors resize-none"
                   placeholder="Enter product description"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
                   Sizes & Prices *
                 </label>
                 {formData.sizes.map((size, index) => (
@@ -390,20 +397,20 @@ const AdminPanel = () => {
                       value={size.size}
                       onChange={(e) => handleSizeChange(index, 'size', e.target.value)}
                       placeholder="Size (e.g., 4x6)"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C9897A] text-sm text-gray-900 transition-colors"
                     />
                     <input
                       type="number"
                       value={size.price}
                       onChange={(e) => handleSizeChange(index, 'price', e.target.value)}
                       placeholder="Price"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C9897A] text-sm text-gray-900 transition-colors"
                     />
                     {formData.sizes.length > 1 && (
                       <button
                         type="button"
                         onClick={() => removeSizeField(index)}
-                        className="text-red-500 hover:text-red-700 px-2"
+                        className="text-gray-400 hover:text-red-500 px-2"
                       >
                         <Minus className="h-4 w-4" />
                       </button>
@@ -413,15 +420,15 @@ const AdminPanel = () => {
                 <button
                   type="button"
                   onClick={addSizeField}
-                  className="text-primary hover:text-blue-600 text-sm flex items-center space-x-1 bg-blue-50 px-3 py-2 rounded-md hover:bg-blue-100 transition-colors"
+                  className="inline-flex items-center space-x-1 bg-gray-50 border border-gray-155 text-gray-600 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-100 transition-colors"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-3.5 w-3.5" />
                   <span>Add Size</span>
                 </button>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
                   Shapes & Prices *
                 </label>
                 {formData.shapes.map((shape, index) => (
@@ -430,21 +437,21 @@ const AdminPanel = () => {
                       type="text"
                       value={shape.shape}
                       onChange={(e) => handleShapeChange(index, 'shape', e.target.value)}
-                      placeholder="Shape (e.g., Square, Round, Heart)"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
+                      placeholder="Shape (e.g., Square)"
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C9897A] text-sm text-gray-900 transition-colors"
                     />
                     <input
                       type="number"
                       value={shape.price}
                       onChange={(e) => handleShapeChange(index, 'price', e.target.value)}
                       placeholder="Price (0 for base)"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C9897A] text-sm text-gray-900 transition-colors"
                     />
                     {formData.shapes.length > 1 && (
                       <button
                         type="button"
                         onClick={() => removeShapeField(index)}
-                        className="text-red-500 hover:text-red-700 px-2"
+                        className="text-gray-400 hover:text-red-500 px-2"
                       >
                         <Minus className="h-4 w-4" />
                       </button>
@@ -454,27 +461,27 @@ const AdminPanel = () => {
                 <button
                   type="button"
                   onClick={addShapeField}
-                  className="text-primary hover:text-blue-600 text-sm flex items-center space-x-1 bg-blue-50 px-3 py-2 rounded-md hover:bg-blue-100 transition-colors"
+                  className="inline-flex items-center space-x-1 bg-gray-50 border border-gray-155 text-gray-600 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-100 transition-colors"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-3.5 w-3.5" />
                   <span>Add Shape</span>
                 </button>
               </div>
 
-              <div className="flex space-x-4 pt-4">
+              <div className="flex space-x-3 pt-4">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`flex-1 text-white py-2 px-4 rounded-md transition-colors flex items-center justify-center space-x-2 ${
-                    isSubmitting 
-                      ? 'bg-gray-400 cursor-not-allowed' 
-                      : 'bg-primary hover:bg-blue-600'
-                  }`}
+                  className="flex-1 py-2 rounded-lg font-semibold text-xs uppercase tracking-wider text-white flex items-center justify-center space-x-1.5 transition-all"
+                  style={{
+                    background: isSubmitting ? '#9CA3AF' : '#111111',
+                    cursor: isSubmitting ? 'not-allowed' : 'pointer'
+                  }}
                 >
                   <Save className="h-4 w-4" />
                   <span>
                     {isSubmitting 
-                      ? 'Saving Product...' 
+                      ? 'Saving...' 
                       : (editingProduct ? 'Update Product' : 'Add Product')}
                   </span>
                 </button>
@@ -482,7 +489,7 @@ const AdminPanel = () => {
                   type="button"
                   onClick={resetForm}
                   disabled={isSubmitting}
-                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 transition-colors disabled:opacity-50"
+                  className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider hover:bg-gray-250 transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -493,36 +500,36 @@ const AdminPanel = () => {
       )}
 
       {/* Products List */}
-      <div className="bg-white rounded-lg shadow-md">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold flex items-center">
-            <Package className="h-5 w-5 mr-2" />
+      <div className="bg-white rounded-lg border border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h2 className="text-sm font-semibold uppercase tracking-wider flex items-center text-gray-700">
+            <Package className="h-4 w-4 mr-2 text-[#C9897A]" />
             Products ({products.length})
           </h2>
         </div>
         
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-[#F8F8F8]">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
                   Product
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
                   Category
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
                   Price Range
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
                   Sizes
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-100">
               {products.map((product) => (
                 <tr key={product.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -530,41 +537,41 @@ const AdminPanel = () => {
                       <img
                         src={product.image.startsWith('http') || product.image.startsWith('data:') ? product.image : `${process.env.PUBLIC_URL}${product.image}`}
                         alt={product.name}
-                        className="h-12 w-12 rounded-md object-cover mr-4"
+                        className="h-10 w-10 rounded border border-gray-100 object-cover mr-4"
                       />
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-xs font-semibold text-gray-900">
                           {product.name}
                         </div>
-                        <div className="text-sm text-gray-500 truncate max-w-xs">
+                        <div className="text-xs text-gray-400 truncate max-w-xs mt-0.5">
                           {product.description}
                         </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-[#F2E8E5] text-[#C9897A] capitalize">
                       {product.category}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs font-semibold text-gray-900">
                     ₹{Math.min(...product.sizes.map(s => s.price))} - 
                     ₹{Math.max(...product.sizes.map(s => s.price))}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
                     {product.sizes.length} sizes
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-2">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs font-medium">
+                    <div className="flex space-x-3">
                       <button
                         onClick={() => handleEdit(product)}
-                        className="text-primary hover:text-blue-600"
+                        className="text-gray-400 hover:text-[#C9897A] transition-colors"
                       >
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(product.id)}
-                        className="text-red-600 hover:text-red-800"
+                        className="text-gray-400 hover:text-red-500 transition-colors"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -578,7 +585,7 @@ const AdminPanel = () => {
 
         {products.length === 0 && (
           <div className="text-center py-12">
-            <Package className="mx-auto h-12 w-12 text-gray-400" />
+            <Package className="mx-auto h-12 w-12 text-gray-300" />
             <h3 className="mt-2 text-sm font-medium text-gray-900">No products</h3>
             <p className="mt-1 text-sm text-gray-500">
               Get started by adding a new product.

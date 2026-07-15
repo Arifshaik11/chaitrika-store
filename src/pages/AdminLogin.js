@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { User, Lock } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const AdminLogin = () => {
   const [credentials, setCredentials] = useState({
@@ -47,27 +48,33 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <SEO
+        title="Admin Login | Chaitra Wrap & Wear"
+        description="Admin login page"
+        robots="noindex, nofollow"
+        canonical="https://chaitrika.in/admin"
+      />
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="text-center text-2xl sm:text-3xl font-bold text-gray-900">
+          <h2 className="text-center font-display text-3xl font-semibold text-gray-900">
             Admin Login
           </h2>
-          <p className="mt-2 text-center text-xs sm:text-sm text-gray-600">
-            Access the admin panel to manage products and prices
+          <p className="mt-2 text-center text-xs text-gray-400 uppercase tracking-wider">
+            Access the admin control center
           </p>
         </div>
         
-        <div className="mt-8 bg-white py-6 sm:py-8 px-4 shadow-lg rounded-lg sm:px-10">
+        <div className="mt-8 bg-[#F8F8F8] border border-[#EBEBEB] py-8 px-6 rounded-lg sm:px-10">
           {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md text-sm">
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-650 rounded-md text-xs font-medium">
               {error}
             </div>
           )}
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
                 Username
               </label>
               <div className="relative">
@@ -78,14 +85,14 @@ const AdminLogin = () => {
                   value={credentials.username}
                   onChange={handleInputChange}
                   required
-                  className="w-full pl-10 pr-3 py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                  className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C9897A] text-sm transition-colors bg-white"
                   placeholder="Enter username"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
                 Password
               </label>
               <div className="relative">
@@ -96,7 +103,7 @@ const AdminLogin = () => {
                   value={credentials.password}
                   onChange={handleInputChange}
                   required
-                  className="w-full pl-10 pr-3 py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                  className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#C9897A] text-sm transition-colors bg-white"
                   placeholder="Enter password"
                 />
               </div>
@@ -105,22 +112,22 @@ const AdminLogin = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all ${
-                isLoading
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-primary hover:bg-blue-600'
-              }`}
+              className="w-full py-2.5 rounded-lg font-medium text-sm text-white flex justify-center transition-all"
+              style={{
+                background: isLoading ? '#9CA3AF' : '#111111',
+                cursor: isLoading ? 'not-allowed' : 'pointer'
+              }}
             >
               {isLoading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
           
-          <div className="mt-6 p-4 bg-blue-50 rounded-md border border-blue-200">
-            <p className="text-xs sm:text-sm text-blue-800 text-center">
-              🔐 Secure Admin Access
+          <div className="mt-6 p-4 bg-white rounded-md border border-[#EBEBEB] text-center">
+            <p className="text-xs font-semibold uppercase tracking-wider text-gray-700">
+              🔐 Secure Access
             </p>
-            <p className="text-xs text-blue-600 text-center mt-1">
-              Contact administrator for login credentials
+            <p className="text-[10px] text-gray-450 mt-1">
+              Contact administrator for credentials.
             </p>
           </div>
         </div>

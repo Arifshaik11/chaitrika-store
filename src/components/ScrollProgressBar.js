@@ -18,10 +18,11 @@ const ScrollProgressBar = () => {
 
   return (
     <div
-      className="fixed top-0 left-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 z-50 transition-all duration-300 ease-out"
+      className="fixed top-0 left-0 h-1 z-50 transition-all duration-300 ease-out"
       style={{
         width: `${scrollProgress}%`,
-        boxShadow: scrollProgress > 0 ? '0 0 20px rgba(59, 130, 246, 0.6)' : 'none'
+        background: '#C9897A',
+        boxShadow: scrollProgress > 0 ? '0 1px 4px rgba(201, 137, 122, 0.4)' : 'none'
       }}
     />
   );
